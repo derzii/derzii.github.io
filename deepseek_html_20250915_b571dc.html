@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C Standard Library Explorer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/themes/prism-tomorrow.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --code-bg: #2d2d2d;
+            --header-bg: #3498db;
+            --function-hover: #2980b9;
+            --header-text: white;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: var(--header-text);
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 2.2rem;
+        }
+
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #search {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        main {
+            display: flex;
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            gap: 2rem;
+        }
+
+        #function-list {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        #details-panel {
+            flex: 2;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .header-section {
+            margin-bottom: 0.5rem;
+        }
+
+        .header-title {
+            background-color: var(--header-bg);
+            color: white;
+            padding: 0.8rem 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .header-title:hover {
+            background-color: var(--function-hover);
+        }
+
+        .function-items {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .function-items.open {
+            max-height: 2000px;
+            transition: max-height 0.5s ease-in;
+        }
+
+        .function-item {
+            padding: 0.8rem 1rem 0.8rem 2rem;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+
+        .function-item:hover {
+            background-color: #e3f2fd;
+        }
+
+        .function-item.highlight {
+            background-color: #fff9c4;
+        }
+
+        .function-detail {
+            display: none;
+        }
+
+        .function-detail.active {
+            display: block;
+        }
+
+        .function-name {
+            color: var(--secondary-color);
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+
+        .function-header {
+            color: var(--dark-color);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .function-description {
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .function-prototype {
+            background-color: var(--code-bg);
+            color: white;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+        }
+
+        .function-parameters, .function-return {
+            margin-bottom: 1.5rem;
+        }
+
+        .parameter-list, .return-value {
+            padding-left: 1.5rem;
+        }
+
+        .parameter-item, .return-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .code-example {
+            position: relative;
+            margin-top: 1.5rem;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        pre {
+            margin: 0;
+        }
+
+        code[class*="language-"] {
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .no-results {
+            padding: 1rem;
+            text-align: center;
+            color: #777;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #777;
+            padding: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            main {
+                flex-direction: column;
+            }
+            
+            #function-list, #details-panel {
+                max-height: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>C Standard Library Explorer</h1>
+        <div class="search-container">
+            <input type="text" id="search" placeholder="Search C standard library functions...">
+        </div>
+    </header>
+
+    <main>
+        <section id="function-list">
+            <!-- Function list will be generated by JavaScript -->
+        </section>
+
+        <section id="details-panel">
+            <div class="empty-state">
+                <h2>Select a function to view details</h2>
+                <p>Click on any function from the list to see its description, parameters, return value, and example usage.</p>
+            </div>
+            <!-- Function details will be populated by JavaScript -->
+        </section>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/components/prism-c.min.js"></script>
+    <script>
+        // C Standard Library data - modular structure for easy expansion
+        const cLibraryData = {
+            "stdio.h": [
+                {
+                    name: "printf",
+                    description: "Prints formatted output to stdout.",
+                    prototype: "int printf(const char *format, ...);",
+                    parameters: [
+                        { name: "format", description: "A string that specifies the format of the output." },
+                        { name: "...", description: "Additional arguments specifying data to print." }
+                    ],
+                    return: "On success, returns the number of characters printed. On error, returns a negative value.",
+                    example: `#include <stdio.h>
+
+int main() {
+    int age = 25;
+    printf("I am %d years old.\\n", age);
+    return 0;
+}`
+                },
+                {
+                    name: "scanf",
+                    description: "Reads formatted input from stdin.",
+                    prototype: "int scanf(const char *format, ...);",
+                    parameters: [
+                        { name: "format", description: "A string that specifies the format of the input." },
+                        { name: "...", description: "Additional arguments specifying where to store the read data." }
+                    ],
+                    return: "Returns the number of items successfully read. Returns EOF on error.",
+                    example: `#include <stdio.h>
+
+int main() {
+    int num;
+    printf("Enter a number: ");
+    scanf("%d", &num);
+    printf("You entered: %d\\n", num);
+    return 0;
+}`
+                },
+                {
+                    name: "fopen",
+                    description: "Opens a file.",
+                    prototype: "FILE *fopen(const char *filename, const char *mode);",
+                    parameters: [
+                        { name: "filename", description: "The name of the file to open." },
+                        { name: "mode", description: "The mode in which to open the file (e.g., \"r\" for read, \"w\" for write)." }
+                    ],
+                    return: "Returns a pointer to the FILE object on success. Returns NULL on error.",
+                    example: `#include <stdio.h>
+
+int main() {
+    FILE *file = fopen("example.txt", "w");
+    if (file != NULL) {
+        fputs("Hello, World!", file);
+        fclose(file);
+    }
+    return 0;
+}`
+                },
+                {
+                    name: "fclose",
+                    description: "Closes a file.",
+                    prototype: "int fclose(FILE *stream);",
+                    parameters: [
+                        { name: "stream", description: "Pointer to the FILE object to close." }
+                    ],
+                    return: "Returns zero on success. Returns EOF on error.",
+                    example: `#include <stdio.h>
+
+int main() {
+    FILE *file = fopen("example.txt", "r");
+    if (file != NULL) {
+        // Read from file
+        fclose(file);
+    }
+    return 0;
+}`
+                },
+                {
+                    name: "fgets",
+                    description: "Reads a string from a file.",
+                    prototype: "char *fgets(char *str, int n, FILE *stream);",
+                    parameters: [
+                        { name: "str", description: "Pointer to an array of chars where the string read is stored." },
+                        { name: "n", description: "Maximum number of characters to read (including the null character)." },
+                        { name: "stream", description: "Pointer to the FILE object to read from." }
+                    ],
+                    return: "Returns str on success. Returns NULL on error or when end of file occurs.",
+                    example: `#include <stdio.h>
+
+int main() {
+    char buffer[100];
+    FILE *file = fopen("example.txt", "r");
+    if (file != NULL) {
+        fgets(buffer, 100, file);
+        printf("Read: %s\\n", buffer);
+        fclose(file);
+    }
+    return 0;
+}`
+                }
+            ],
+            "stdlib.h": [
+                {
+                    name: "malloc",
+                    description: "Allocates a block of memory of the specified size.",
+                    prototype: "void *malloc(size_t size);",
+                    parameters: [
+                        { name: "size", description: "Size of the memory block in bytes." }
+                    ],
+                    return: "Returns a pointer to the allocated memory on success. Returns NULL on error.",
+                    example: `#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int *arr = (int*)malloc(5 * sizeof(int));
+    if (arr != NULL) {
+        for (int i = 0; i < 5; i++) {
+            arr[i] = i * 2;
+        }
+        free(arr);
+    }
+    return 0;
+}`
+                },
+                {
+                    name: "free",
+                    description: "Deallocates a previously allocated memory block.",
+                    prototype: "void free(void *ptr);",
+                    parameters: [
+                        { name: "ptr", description: "Pointer to the memory block to deallocate." }
+                    ],
+                    return: "No return value.",
+                    example: `#include <stdlib.h>
+
+int main() {
+    int *arr = (int*)malloc(5 * sizeof(int));
+    if (arr != NULL) {
+        // Use the allocated memory
+        free(arr); // Deallocate when done
+    }
+    return 0;
+}`
+                },
+                {
+                    name: "atoi",
+                    description: "Converts a string to an integer.",
+                    prototype: "int atoi(const char *str);",
+                    parameters: [
+                        { name: "str", description: "String to be converted to integer." }
+                    ],
+                    return: "Returns the converted integer value.",
+                    example: `#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    char str[] = "12345";
+    int num = atoi(str);
+    printf("The integer is: %d\\n", num);
+    return 0;
+}`
+                },
+                {
+                    name: "rand",
+                    description: "Returns a pseudo-random number between 0 and RAND_MAX.",
+                    prototype: "int rand(void);",
+                    parameters: [],
+                    return: "Returns a pseudo-random integer between 0 and RAND_MAX.",
+                    example: `#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int main() {
+    srand(time(0)); // Seed the random number generator
+    for (int i = 0; i < 5; i++) {
+        printf("%d ", rand() % 100); // Random number between 0 and 99
+    }
+    return 0;
+}`
+                },
+                {
+                    name: "exit",
+                    description: "Terminates the calling process.",
+                    prototype: "void exit(int status);",
+                    parameters: [
+                        { name: "status", description: "Exit status to return to the host environment." }
+                    ],
+                    return: "This function does not return.",
+                    example: `#include <stdlib.h>
+#include <stdio.h>
+
+int main() {
+    FILE *file = fopen("important.txt", "r");
+    if (file == NULL) {
+        printf("Error: Could not open file.\\n");
+        exit(EXIT_FAILURE);
+    }
+    // Process file
+    fclose(file);
+    exit(EXIT_SUCCESS);
+}`
+                }
+            ],
+            "string.h": [
+                {
+                    name: "strlen",
+                    description: "Calculates the length of a string.",
+                    prototype: "size_t strlen(const char *str);",
+                    parameters: [
+                        { name: "str", description: "Pointer to the null-terminated string." }
+                    ],
+                    return: "Returns the length of the string.",
+                    example: `#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char str[] = "Hello, World!";
+    size_t len = strlen(str);
+    printf("Length: %zu\\n", len);
+    return 0;
+}`
+                },
+                {
+                    name: "strcpy",
+                    description: "Copies one string to another.",
+                    prototype: "char *strcpy(char *dest, const char *src);",
+                    parameters: [
+                        { name: "dest", description: "Pointer to the destination array." },
+                        { name: "src", description: "Pointer to the source string." }
+                    ],
+                    return: "Returns a pointer to the destination string.",
+                    example: `#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char src[] = "Hello, World!";
+    char dest[20];
+    strcpy(dest, src);
+    printf("Copied string: %s\\n", dest);
+    return 0;
+}`
+                },
+                {
+                    name: "strcat",
+                    description: "Concatenates two strings.",
+                    prototype: "char *strcat(char *dest, const char *src);",
+                    parameters: [
+                        { name: "dest", description: "Pointer to the destination array." },
+                        { name: "src", description: "Pointer to the source string." }
+                    ],
+                    return: "Returns a pointer to the destination string.",
+                    example: `#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char dest[20] = "Hello";
+    char src[] = ", World!";
+    strcat(dest, src);
+    printf("Concatenated string: %s\\n", dest);
+    return 0;
+}`
+                },
+                {
+                    name: "strcmp",
+                    description: "Compares two strings.",
+                    prototype: "int strcmp(const char *str1, const char *str2);",
+                    parameters: [
+                        { name: "str1", description: "Pointer to the first string." },
+                        { name: "str2", description: "Pointer to the second string." }
+                    ],
+                    return: "Returns 0 if the strings are equal, negative if str1 < str2, positive if str1 > str2.",
+                    example: `#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char str1[] = "apple";
+    char str2[] = "banana";
+    int result = strcmp(str1, str2);
+    if (result < 0) {
+        printf("%s comes before %s\\n", str1, str2);
+    } else if (result > 0) {
+        printf("%s comes after %s\\n", str1, str2);
+    } else {
+        printf("Strings are equal\\n");
+    }
+    return 0;
+}`
+                },
+                {
+                    name: "memset",
+                    description: "Fills a block of memory with a specified value.",
+                    prototype: "void *memset(void *ptr, int value, size_t num);",
+                    parameters: [
+                        { name: "ptr", description: "Pointer to the memory block to fill." },
+                        { name: "value", description: "Value to set (passed as int but converted to unsigned char)." },
+                        { name: "num", description: "Number of bytes to set to the value." }
+                    ],
+                    return: "Returns a pointer to the memory block.",
+                    example: `#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char str[50] = "Hello, World!";
+    printf("Before: %s\\n", str);
+    memset(str, '-', 5);
+    printf("After: %s\\n", str);
+    return 0;
+}`
+                }
+            ],
+            "math.h": [
+                {
+                    name: "sqrt",
+                    description: "Calculates the square root of a number.",
+                    prototype: "double sqrt(double x);",
+                    parameters: [
+                        { name: "x", description: "Value whose square root is computed." }
+                    ],
+                    return: "Returns the square root of x.",
+                    example: `#include <stdio.h>
+#include <math.h>
+
+int main() {
+    double num = 25.0;
+    double result = sqrt(num);
+    printf("Square root of %.2f is %.2f\\n", num, result);
+    return 0;
+}`
+                },
+                {
+                    name: "pow",
+                    description: "Calculates a number raised to a power.",
+                    prototype: "double pow(double base, double exponent);",
+                    parameters: [
+                        { name: "base", description: "Base value." },
+                        { name: "exponent", description: "Exponent value." }
+                    ],
+                    return: "Returns base raised to the power of exponent.",
+                    example: `#include <stdio.h>
+#include <math.h>
+
+int main() {
+    double base = 2.0;
+    double exponent = 3.0;
+    double result = pow(base, exponent);
+    printf("%.2f raised to %.2f is %.2f\\n", base, exponent, result);
+    return 0;
+}`
+                },
+                {
+                    name: "sin",
+                    description: "Calculates the sine of an angle (in radians).",
+                    prototype: "double sin(double x);",
+                    parameters: [
+                        { name: "x", description: "Angle in radians." }
+                    ],
+                    return: "Returns the sine of x.",
+                    example: `#include <stdio.h>
+#include <math.h>
+
+int main() {
+    double angle = 3.14159 / 2; // 90 degrees in radians
+    double result = sin(angle);
+    printf("Sine of %.2f radians is %.2f\\n", angle, result);
+    return 0;
+}`
+                },
+                {
+                    name: "cos",
+                    description: "Calculates the cosine of an angle (in radians).",
+                    prototype: "double cos(double x);",
+                    parameters: [
+                        { name: "x", description: "Angle in radians." }
+                    ],
+                    return: "Returns the cosine of x.",
+                    example: `#include <stdio.h>
+#include <math.h>
+
+int main() {
+    double angle = 0; // 0 degrees in radians
+    double result = cos(angle);
+    printf("Cosine of %.2f radians is %.2f\\n", angle, result);
+    return 0;
+}`
+                },
+                {
+                    name: "log",
+                    description: "Calculates the natural logarithm (base-e) of a number.",
+                    prototype: "double log(double x);",
+                    parameters: [
+                        { name: "x", description: "Value whose logarithm is calculated." }
+                    ],
+                    return: "Returns the natural logarithm of x.",
+                    example: `#include <stdio.h>
+#include <math.h>
+
+int main() {
+    double num = 2.71828; // e
+    double result = log(num);
+    printf("Natural logarithm of %.5f is %.5f\\n", num, result);
+    return 0;
+}`
+                }
+            ],
+            "ctype.h": [
+                {
+                    name: "isalpha",
+                    description: "Checks if a character is an alphabetic letter.",
+                    prototype: "int isalpha(int c);",
+                    parameters: [
+                        { name: "c", description: "Character to check." }
+                    ],
+                    return: "Returns non-zero if c is an alphabetic letter, zero otherwise.",
+                    example: `#include <stdio.h>
+#include <ctype.h>
+
+int main() {
+    char c = 'A';
+    if (isalpha(c)) {
+        printf("%c is an alphabetic letter.\\n", c);
+    } else {
+        printf("%c is not an alphabetic letter.\\n", c);
+    }
+    return 0;
+}`
+                },
+                {
+                    name: "isdigit",
+                    description: "Checks if a character is a digit.",
+                    prototype: "int isdigit(int c);",
+                    parameters: [
+                        { name: "c", description: "Character to check." }
+                    ],
+                    return: "Returns non-zero if c is a digit, zero otherwise.",
+                    example: `#include <stdio.h>
+#include <ctype.h>
+
+int main() {
+    char c = '5';
+    if (isdigit(c)) {
+        printf("%c is a digit.\\n", c);
+    } else {
+        printf("%c is not a digit.\\n", c);
+    }
+    return 0;
+}`
+                },
+                {
+                    name: "toupper",
+                    description: "Converts a character to uppercase.",
+                    prototype: "int toupper(int c);",
+                    parameters: [
+                        { name: "c", description: "Character to convert." }
+                    ],
+                    return: "Returns the uppercase version of c if it is a lowercase letter, otherwise returns c unchanged.",
+                    example: `#include <stdio.h>
+#include <ctype.h>
+
+int main() {
+    char c = 'h';
+    char upper = toupper(c);
+    printf("%c in uppercase is %c\\n", c, upper);
+    return 0;
+}`
+                },
+                {
+                    name: "tolower",
+                    description: "Converts a character to lowercase.",
+                    prototype: "int tolower(int c);",
+                    parameters: [
+                        { name: "c", description: "Character to convert." }
+                    ],
+                    return: "Returns the lowercase version of c if it is an uppercase letter, otherwise returns c unchanged.",
+                    example: `#include <stdio.h>
+#include <ctype.h>
+
+int main() {
+    char c = 'H';
+    char lower = tolower(c);
+    printf("%c in lowercase is %c\\n", c, lower);
+    return 0;
+}`
+                },
+                {
+                    name: "isspace",
+                    description: "Checks if a character is a whitespace character.",
+                    prototype: "int isspace(int c);",
+                    parameters: [
+                        { name: "c", description: "Character to check." }
+                    ],
+                    return: "Returns non-zero if c is a whitespace character, zero otherwise.",
+                    example: `#include <stdio.h>
+#include <ctype.h>
+
+int main() {
+    char c = ' ';
+    if (isspace(c)) {
+        printf("The character is a whitespace.\\n");
+    } else {
+        printf("The character is not a whitespace.\\n");
+    }
+    return 0;
+}`
+                }
+            ],
+            "time.h": [
+                {
+                    name: "time",
+                    description: "Gets the current calendar time as a time_t object.",
+                    prototype: "time_t time(time_t *timer);",
+                    parameters: [
+                        { name: "timer", description: "Pointer to a time_t object where the time is stored, or NULL." }
+                    ],
+                    return: "Returns the current calendar time as a time_t object.",
+                    example: `#include <stdio.h>
+#include <time.h>
+
+int main() {
+    time_t now;
+    time(&now);
+    printf("Current time: %ld seconds since epoch\\n", now);
+    return 0;
+}`
+                },
+                {
+                    name: "ctime",
+                    description: "Converts a time_t value to a string representation.",
+                    prototype: "char *ctime(const time_t *timer);",
+                    parameters: [
+                        { name: "timer", description: "Pointer to a time_t object representing the time." }
+                    ],
+                    return: "Returns a pointer to a string representing the date and time.",
+                    example: `#include <stdio.h>
+#include <time.h>
+
+int main() {
+    time_t now;
+    time(&now);
+    printf("Current time: %s", ctime(&now));
+    return 0;
+}`
+                },
+                {
+                    name: "difftime",
+                    description: "Computes the difference between two times in seconds.",
+                    prototype: "double difftime(time_t end, time_t beginning);",
+                    parameters: [
+                        { name: "end", description: "Ending time." },
+                        { name: "beginning", description: "Beginning time." }
+                    ],
+                    return: "Returns the difference in seconds (end - beginning) as a double.",
+                    example: `#include <stdio.h>
+#include <time.h>
+
+int main() {
+    time_t start, end;
+    time(&start);
+    // Do some work
+    for (long i = 0; i < 100000000; i++);
+    time(&end);
+    
+    double elapsed = difftime(end, start);
+    printf("Elapsed time: %.2f seconds\\n", elapsed);
+    return 0;
+}`
+                },
+                {
+                    name: "strftime",
+                    description: "Formats a time string according to specified format.",
+                    prototype: "size_t strftime(char *str, size_t maxsize, const char *format, const struct tm *timeptr);",
+                    parameters: [
+                        { name: "str", description: "Pointer to the destination array." },
+                        { name: "maxsize", description: "Maximum number of characters to write." },
+                        { name: "format", description: "Format string containing any combination of format specifiers." },
+                        { name: "timeptr", description: "Pointer to a tm structure that contains the time to format." }
+                    ],
+                    return: "Returns the number of characters written to str, not including the null terminator.",
+                    example: `#include <stdio.h>
+#include <time.h>
+
+int main() {
+    time_t now;
+    struct tm *timeinfo;
+    char buffer[80];
+    
+    time(&now);
+    timeinfo = localtime(&now);
+    
+    strftime(buffer, 80, "Now it's %I:%M%p.", timeinfo);
+    printf("%s\\n", buffer);
+    
+    return 0;
+}`
+                }
+            ]
+        };
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Render the function list
+            renderFunctionList();
+            
+            // Set up search functionality
+            document.getElementById('search').addEventListener('input', handleSearch);
+            
+            // Set up copy button functionality
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('copy-btn')) {
+                    const codeElement = e.target.parentElement.querySelector('code');
+                    copyToClipboard(codeElement.textContent);
+                    e.target.textContent = 'Copied!';
+                    setTimeout(() => {
+                        e.target.textContent = 'Copy';
+                    }, 2000);
+                }
+            });
+        });
+
+        // Render the function list
+        function renderFunctionList() {
+            const functionList = document.getElementById('function-list');
+            functionList.innerHTML = '';
+            
+            for (const header in cLibraryData) {
+                const headerSection = document.createElement('div');
+                headerSection.className = 'header-section';
+                
+                const headerTitle = document.createElement('div');
+                headerTitle.className = 'header-title';
+                headerTitle.innerHTML = `${header} <span>▼</span>`;
+                headerTitle.addEventListener('click', () => toggleHeader(headerTitle));
+                
+                const functionItems = document.createElement('div');
+                functionItems.className = 'function-items';
+                
+                cLibraryData[header].forEach(func => {
+                    const functionItem = document.createElement('div');
+                    functionItem.className = 'function-item';
+                    functionItem.textContent = func.name;
+                    functionItem.setAttribute('data-header', header);
+                    functionItem.setAttribute('data-function', func.name);
+                    functionItem.addEventListener('click', () => showFunctionDetails(header, func.name));
+                    
+                    functionItems.appendChild(functionItem);
+                });
+                
+                headerSection.appendChild(headerTitle);
+                headerSection.appendChild(functionItems);
+                functionList.appendChild(headerSection);
+            }
+        }
+
+        // Toggle header collapse/expand
+        function toggleHeader(headerTitle) {
+            const functionItems = headerTitle.nextElementSibling;
+            functionItems.classList.toggle('open');
+            
+            const arrow = headerTitle.querySelector('span');
+            arrow.textContent = functionItems.classList.contains('open') ? '▼' : '▶';
+        }
+
+        // Show function details
+        function showFunctionDetails(header, functionName) {
+            const functionData = cLibraryData[header].find(func => func.name === functionName);
+            if (!functionData) return;
+            
+            const detailsPanel = document.getElementById('details-panel');
+            detailsPanel.innerHTML = '';
+            
+            const functionDetail = document.createElement('div');
+            functionDetail.className = 'function-detail active';
+            
+            functionDetail.innerHTML = `
+                <h2 class="function-name">${functionData.name}</h2>
+                <div class="function-header">Defined in <strong>${header}</strong></div>
+                <p class="function-description">${functionData.description}</p>
+                
+                <div class="function-prototype">
+                    <pre><code class="language-c">${functionData.prototype}</code></pre>
+                </div>
+                
+                <div class="function-parameters">
+                    <h3>Parameters</h3>
+                    <ul class="parameter-list">
+                        ${functionData.parameters.map(param => `
+                            <li class="parameter-item">
+                                <strong>${param.name}</strong>: ${param.description}
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+                
+                <div class="function-return">
+                    <h3>Return Value</h3>
+                    <div class="return-value">${functionData.return}</div>
+                </div>
+                
+                <div class="code-example">
+                    <h3>Example</h3>
+                    <button class="copy-btn">Copy</button>
+                    <pre><code class="language-c">${functionData.example}</code></pre>
+                </div>
+            `;
+            
+            detailsPanel.appendChild(functionDetail);
+            
+            // Apply syntax highlighting
+            Prism.highlightAllUnder(detailsPanel);
+        }
+
+        // Handle search input
+        function handleSearch(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const functionItems = document.querySelectorAll('.function-item');
+            const headers = document.querySelectorAll('.header-title');
+            
+            if (searchTerm === '') {
+                // Show all functions and headers
+                functionItems.forEach(item => {
+                    item.style.display = 'block';
+                    item.classList.remove('highlight');
+                });
+                
+                headers.forEach(header => {
+                    header.parentElement.style.display = 'block';
+                });
+                
+                return;
+            }
+            
+            // Hide all headers initially
+            headers.forEach(header => {
+                header.parentElement.style.display = 'none';
+            });
+            
+            let hasResults = false;
+            
+            // Filter functions
+            functionItems.forEach(item => {
+                const functionName = item.getAttribute('data-function').toLowerCase();
+                const header = item.getAttribute('data-header');
+                
+                if (functionName.includes(searchTerm)) {
+                    item.style.display = 'block';
+                    item.classList.add('highlight');
+                    
+                    // Show the parent header
+                    const headerElement = item.closest('.header-section');
+                    headerElement.style.display = 'block';
+                    
+                    // Expand the header
+                    const functionItems = headerElement.querySelector('.function-items');
+                    functionItems.classList.add('open');
+                    
+                    const arrow = headerElement.querySelector('.header-title span');
+                    arrow.textContent = '▼';
+                    
+                    hasResults = true;
+                } else {
+                    item.style.display = 'none';
+                    item.classList.remove('highlight');
+                }
+            });
+            
+            // Show message if no results
+            if (!hasResults) {
+                const functionList = document.getElementById('function-list');
+                const noResults = document.createElement('div');
+                noResults.className = 'no-results';
+                noResults.textContent = 'No functions found matching your search.';
+                
+                // Remove previous no-results message if exists
+                const previousNoResults = functionList.querySelector('.no-results');
+                if (previousNoResults) {
+                    functionList.removeChild(previousNoResults);
+                }
+                
+                functionList.appendChild(noResults);
+            } else {
+                // Remove no-results message if it exists
+                const noResults = document.querySelector('.no-results');
+                if (noResults) {
+                    noResults.remove();
+                }
+            }
+        }
+
+        // Copy to clipboard
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        }
+    </script>
+</body>
+</html>
