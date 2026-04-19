@@ -11,15 +11,15 @@
   --brown-faint:   #b08060;
   --brown-mark:    #f0e0c8;
   --white:         #ffffff;
-  --terminal-bg:   #353535;
-  --terminal-text: #afd0d0;
+  --terminal-bg:   #2a2218;
+  --terminal-text: #d4b896;
   --rule:          #e8e0d8;
 
   --mono: 'Courier New', Courier, monospace;
   --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
 }
 
-html { font-size: 18px; }
+html { font-size: 16px; }
 
 body {
   background: var(--white);
@@ -264,8 +264,93 @@ footer {
   z-index: 100;
 }
 
-/* ── Responsive ── */
-@media (max-width: 540px) {
-  .page { padding: 0 1.25rem; }
-  .essay-header h1 { font-size: 1.3rem; }
+/* ── Responsive / Mobile ── */
+@media (max-width: 600px) {
+  html { font-size: 15px; }
+
+  .page {
+    padding: 0 1.1rem;
+    max-width: 100%;
+  }
+
+  /* Terminal block — prevent overflow, tighten padding */
+  .terminal {
+    margin: 1.25rem 0 2rem;
+    padding: 1rem 1.1rem;
+    border-radius: 4px;
+    overflow-x: hidden;
+  }
+
+  .terminal p {
+    font-size: 0.82rem;
+    line-height: 1.85;
+    word-break: break-word;
+  }
+
+  /* Section heading */
+  .section-heading {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Nav */
+  nav {
+    gap: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  nav a { font-size: 0.82rem; }
+
+  /* Essay list — larger tap targets */
+  .essay-list li {
+    margin: 0.25rem 0;
+  }
+
+  .essay-list a {
+    font-size: 0.88rem;
+    line-height: 2.2;
+    padding: 0.1em 0.4em;
+    display: inline-block;
+  }
+
+  /* Footer */
+  footer { padding: 1.5rem 0 2.5rem; }
+
+  .footer-links { flex-wrap: wrap; gap: 1rem; }
+
+  .footer-links a { font-size: 0.8rem; }
+
+  /* Essay page */
+  .back-link {
+    padding-top: 1.75rem;
+    font-size: 0.78rem;
+  }
+
+  .essay-header {
+    padding: 1.25rem 0 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .essay-header h1 {
+    font-size: 1.3rem;
+    line-height: 1.25;
+  }
+
+  .essay-subtitle { font-size: 0.88rem; }
+
+  /* Essay body */
+  .essay-body {
+    font-size: 0.86rem;
+    line-height: 1.9;
+  }
+
+  .essay-body p { margin-bottom: 1.25rem; }
+
+  .essay-body blockquote {
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  /* Essay footer */
+  .essay-footer { padding: 1.25rem 0 2.5rem; }
 }
