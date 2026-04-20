@@ -5,37 +5,126 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rezeon's Marginalia</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .lang-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 1.5rem;
+    }
+    .lang-label {
+      font-size: 13px;
+      color: #888;
+      font-family: monospace;
+    }
+    .lang-label.active {
+      color: inherit;
+      font-weight: bold;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      border-radius: 22px;
+      transition: 0.3s;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+    input:checked + .slider {
+      background-color: #555;
+    }
+    input:checked + .slider:before {
+      transform: translateX(18px);
+    }
+    [data-lang="bn"] { display: none; }
+    body.bangla [data-lang="en"] { display: none; }
+    body.bangla [data-lang="bn"] { display: list-item; }
+    body.bangla .terminal [data-lang="bn"] { display: block; }
+    body.bangla .section-heading[data-lang="bn"] { display: block; }
+    body.bangla .section-heading[data-lang="en"] { display: none; }
+  </style>
 </head>
 <body>
-<div class="page">
+<div class="page" style="position:relative;z-index:1;">
 
   <div class="terminal">
-    <p><span class="prompt">&gt;</span> Hello</p>
-    <p><span class="prompt">&gt;</span> My name is Rezeon</p>
-    <p><span class="prompt">&gt;</span> I write about why people are the way they are<span class="cursor"></span></p>
+    <p data-lang="en"><span class="prompt">&gt;</span> Hello</p>
+    <p data-lang="en"><span class="prompt">&gt;</span> My name is Rezeon</p>
+    <p data-lang="en"><span class="prompt">&gt;</span> I write about why people are the way they are<span class="cursor"></span></p>
+
+    <p data-lang="bn"><span class="prompt">&gt;</span> হ্যালো</p>
+    <p data-lang="bn"><span class="prompt">&gt;</span> আমার নাম রেজিওন</p>
+    <p data-lang="bn"><span class="prompt">&gt;</span> আমি লিখি কেন মানুষ যেভাবে আছে সেভাবেই আছে<span class="cursor"></span></p>
   </div>
 
-  <h2 class="section-heading">Essays</h2>
+  <div class="lang-toggle">
+    <span class="lang-label" id="label-en">EN</span>
+    <label class="switch">
+      <input type="checkbox" id="langSwitch">
+      <span class="slider"></span>
+    </label>
+    <span class="lang-label" id="label-bn">বাং</span>
+  </div>
+
+  <h2 class="section-heading" data-lang="en">Essays</h2>
+  <h2 class="section-heading" data-lang="bn">প্রবন্ধ</h2>
 
   <nav>
-    <a href="index.html" class="active">All</a>
-    <a href="about.html">About</a>
+    <a href="index.html" class="active" data-lang="en">All</a>
+    <a href="index.html" class="active" data-lang="bn">সব</a>
+    <a href="about.html" data-lang="en">About</a>
+    <a href="about-bn.html" data-lang="bn">কেন লিখি</a>
   </nav>
 
   <ul class="essay-list">
-    <li><a href="god-burden-of-proof.html">"You cant disporve God's existence"</a></li>
-    <li><a href="cancerous-growth.html">Cancerous Growth</a></li>
-    <li><a href="claims-require-evidence.html">Claims require evidence</a></li>
-    <li><a href="science-vs-theology.html">Science is to dumb down theology?</a></li>
-    <li><a href="absurd-generalization.html">Absurd Generalization</a></li>
-    <li><a href="atheists-reject-god-to-sin.html">Atheists Reject God So They Can Sin?</a></li>
-    <li><a href="internet-sanity.html">The Internet Doesn't Deserve Your Sanity</a></li>
-    <li><a href="emotional-withdrawal.html">Emotional Withdrawal as Survival Mechanism</a></li>
-    <li><a href="absence-of-evidence.html">Absence of Evidence is Enough Evidence to Not Believe</a></li>
-    <li><a href="emotional-beliefs.html">Emotional Beliefs</a></li>
-    <li><a href="respect-as-a-weapon.html">Respect as a Weapon</a></li>
-    <li><a href="pre-established-belief.html">The Problem With Pre-Established Belief</a></li>
-    <li><a href="what-is-self-evident.html">What is Self-Evident</a></li>
+    <li data-lang="en"><a href="god-burden-of-proof.html">"You cant disporve God's existence"</a></li>
+    <li data-lang="en"><a href="cancerous-growth.html">Cancerous Growth</a></li>
+    <li data-lang="en"><a href="claims-require-evidence.html">Claims require evidence</a></li>
+    <li data-lang="en"><a href="science-vs-theology.html">Science is to dumb down theology?</a></li>
+    <li data-lang="en"><a href="absurd-generalization.html">Absurd Generalization</a></li>
+    <li data-lang="en"><a href="atheists-reject-god-to-sin.html">Atheists Reject God So They Can Sin?</a></li>
+    <li data-lang="en"><a href="internet-sanity.html">The Internet Doesn't Deserve Your Sanity</a></li>
+    <li data-lang="en"><a href="emotional-withdrawal.html">Emotional Withdrawal as Survival Mechanism</a></li>
+    <li data-lang="en"><a href="absence-of-evidence.html">Absence of Evidence is Enough Evidence to Not Believe</a></li>
+    <li data-lang="en"><a href="emotional-beliefs.html">Emotional Beliefs</a></li>
+    <li data-lang="en"><a href="respect-as-a-weapon.html">Respect as a Weapon</a></li>
+    <li data-lang="en"><a href="pre-established-belief.html">The Problem With Pre-Established Belief</a></li>
+    <li data-lang="en"><a href="what-is-self-evident.html">What is Self-Evident</a></li>
+
+    <li data-lang="bn"><a href="god-burden-of-proof-bn.html">"তুমি ঈশ্বরের অস্তিত্ব অপ্রমাণ করতে পারবে না"</a></li>
+    <li data-lang="bn"><a href="cancerous-growth-bn.html">ক্যান্সারাস প্রবৃদ্ধি</a></li>
+    <li data-lang="bn"><a href="claims-require-evidence-bn.html">দাবির জন্য প্রমাণ দরকার</a></li>
+    <li data-lang="bn"><a href="science-vs-theology-bn.html">বিজ্ঞান কি ধর্মতত্ত্বকে সরলীকরণ করে?</a></li>
+    <li data-lang="bn"><a href="absurd-generalization-bn.html">অযৌক্তিক সাধারণীকরণ</a></li>
+    <li data-lang="bn"><a href="atheists-reject-god-to-sin-bn.html">নাস্তিকরা কি পাপ করতে ঈশ্বরকে অস্বীকার করে?</a></li>
+    <li data-lang="bn"><a href="internet-sanity-bn.html">ইন্টারনেট তোমার মানসিক স্বাস্থ্যের যোগ্য নয়</a></li>
+    <li data-lang="bn"><a href="emotional-withdrawal-bn.html">বেঁচে থাকার কৌশল হিসেবে আবেগ প্রত্যাহার</a></li>
+    <li data-lang="bn"><a href="absence-of-evidence-bn.html">প্রমাণের অনুপস্থিতিই, অনুপস্থিতির প্রমাণ</a></li>
+    <li data-lang="bn"><a href="emotional-beliefs-bn.html">আবেগপ্রসূত বিশ্বাস</a></li>
+    <li data-lang="bn"><a href="respect-as-a-weapon-bn.html">সম্মানকে অস্ত্র বানানো</a></li>
+    <li data-lang="bn"><a href="pre-established-belief-bn.html">পূর্বনির্ধারিত বিশ্বাসের সমস্যা</a></li>
+    <li data-lang="bn"><a href="what-is-self-evident-bn.html">স্বতঃসিদ্ধ কী?</a></li>
   </ul>
 
   <footer>
@@ -47,5 +136,28 @@
   </footer>
 
 </div>
+
+<script>
+  const toggle = document.getElementById('langSwitch');
+  const labelEn = document.getElementById('label-en');
+  const labelBn = document.getElementById('label-bn');
+
+  toggle.addEventListener('change', function() {
+    if (this.checked) {
+      document.body.classList.add('bangla');
+      labelEn.classList.remove('active');
+      labelBn.classList.add('active');
+      document.documentElement.lang = 'bn';
+    } else {
+      document.body.classList.remove('bangla');
+      labelEn.classList.add('active');
+      labelBn.classList.remove('active');
+      document.documentElement.lang = 'en';
+    }
+  });
+
+  labelEn.classList.add('active');
+</script>
+<script src="circles.js"></script>
 </body>
 </html>

@@ -3,6 +3,8 @@
    mono throughout, terminal intro, coffee brown
    ───────────────────────────────────────── */
 
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap');
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -17,6 +19,7 @@
 
   --mono: 'Courier New', Courier, monospace;
   --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --bangla: 'Noto Serif Bengali', serif;
 }
 
 html { font-size: 16px; }
@@ -27,6 +30,25 @@ body {
   font-family: var(--mono);
   line-height: 1.6;
   min-height: 100vh;
+}
+
+/* ── Bangla font overrides ── */
+body.bangla .terminal p,
+body.bangla .section-heading,
+body.bangla nav a,
+body.bangla .essay-list a,
+body.bangla .footer-links a {
+  font-family: var(--bangla);
+}
+
+body.bangla .essay-list a {
+  font-size: 0.95rem;
+  line-height: 2.2;
+}
+
+body.bangla .terminal p {
+  font-size: 0.95rem;
+  line-height: 1.8;
 }
 
 .page {
