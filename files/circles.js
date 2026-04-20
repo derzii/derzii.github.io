@@ -1,8 +1,8 @@
 (function () {
   const CIRCLE_COUNT = 18;
-  const FLEE_RADIUS = 100;
-  const FLEE_STRENGTH = 12;
-  const DRIFT_SPEED = 0.7;
+  const FLEE_RADIUS = 10;
+  const FLEE_STRENGTH = 70;
+  const DRIFT_SPEED = 0.5;
 
   const canvas = document.createElement('canvas');
   canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;';
@@ -28,7 +28,7 @@
   const circles = Array.from({ length: CIRCLE_COUNT }, () => ({
     x: Math.random() * window.innerWidth,
     y: Math.random() * window.innerHeight,
-    r: 18 + Math.random() * 52,
+    r: 21 + Math.random() * 52,
     vx: (Math.random() - 0.5) * DRIFT_SPEED * 2,
     vy: (Math.random() - 0.5) * DRIFT_SPEED * 2,
     color: brown[Math.floor(Math.random() * brown.length)],
