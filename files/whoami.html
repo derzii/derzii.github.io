@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>whoami — Rezeon's Marginalia</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── whoami-specific styles ── */
+    .whoami-wrap {
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .back-link {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--brown-faint);
+      text-decoration: none;
+      padding-top: 2.5rem;
+      display: inline-block;
+    }
+    .back-link:hover { color: var(--brown); text-decoration: underline; }
+
+    /* ── Identity block ── */
+    .identity-block {
+      margin: 2.5rem 0 2.5rem;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .avatar-frame {
+      width: 150px;
+      height: 150px;
+      border-radius: 4px;
+      background: var(--brown-mark);
+      border: 2px solid var(--brown-faint);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    /* Placeholder avatar: initials */
+    .avatar-initials {
+      font-family: var(--mono);
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: var(--brown-mid);
+      letter-spacing: -0.02em;
+    }
+
+    /* Replace above with <img> if you have a photo:
+       <img src="your-photo.jpg" alt="Rezeon" style="width:100%;height:100%;object-fit:cover;"> */
+
+    .identity-meta {
+      padding-top: 0.25rem;
+    }
+
+    .identity-meta h1 {
+      font-family: var(--sans);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--brown);
+      margin-bottom: 0.2rem;
+      line-height: 1.2;
+    }
+
+    .identity-handle {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--brown-faint);
+      margin-bottom: 0.6rem;
+    }
+
+    .identity-tagline {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--brown-mid);
+      line-height: 1.5;
+    }
+
+    /* ── Divider ── */
+    .whoami-divider {
+      border: none;
+      border-top: 1px solid var(--rule);
+      margin: 0 0 2rem;
+    }
+
+    /* ── Section label (like essay h2) ── */
+    .whoami-label {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      font-weight: 400;
+      color: var(--brown-faint);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 0.9rem;
+    }
+
+    /* ── Bio ── */
+    .bio-section {
+      margin-bottom: 2.5rem;
+    }
+
+    .bio-section p {
+      font-family: var(--mono);
+      font-size: 0.88rem;
+      color: var(--brown);
+      line-height: 1.85;
+      margin-bottom: 1.1rem;
+    }
+
+    .bio-section p:last-child { margin-bottom: 0; }
+
+    /* ── Now / Currently ── */
+    .now-section {
+      margin-bottom: 2.5rem;
+    }
+
+    .now-list {
+      list-style: none;
+      margin: 0; padding: 0;
+    }
+
+    .now-list li {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      color: var(--brown);
+      line-height: 1.6;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      gap: 0.75rem;
+      align-items: baseline;
+    }
+
+    .now-list li:first-child { border-top: 1px solid var(--rule); }
+
+    .now-dot {
+      color: var(--brown-faint);
+      font-size: 0.7rem;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+
+    /* ── Beliefs / positions ── */
+    .beliefs-section {
+      margin-bottom: 2.5rem;
+    }
+
+    .belief-item {
+      background: var(--brown-mark);
+      padding: 0.6rem 0.9rem;
+      margin-bottom: 0.5rem;
+      border-radius: 2px;
+    }
+
+    .belief-item p {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--brown);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .belief-item p::before {
+      content: '"';
+      color: var(--brown-faint);
+    }
+    .belief-item p::after {
+      content: '"';
+      color: var(--brown-faint);
+    }
+
+    /* ── Contact row ── */
+    .contact-section {
+      margin-bottom: 3rem;
+    }
+
+    .contact-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .contact-chip {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--brown);
+      text-decoration: none;
+      border: 1px solid var(--brown-faint);
+      padding: 0.3em 0.7em;
+      border-radius: 2px;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .contact-chip:hover {
+      background: var(--brown);
+      color: var(--white);
+      border-color: var(--brown);
+    }
+
+    /* ── Footer ── */
+    footer {
+      padding: 1.5rem 0 3rem;
+      border-top: 1px solid var(--rule);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .footer-links a {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--brown-faint);
+      text-decoration: none;
+    }
+
+    .footer-links a:hover {
+      color: var(--brown);
+      text-decoration: underline;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .whoami-wrap { padding: 0 1.1rem; }
+
+      .identity-block {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .identity-meta h1 { font-size: 1.3rem; }
+
+      .back-link { padding-top: 1.75rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="whoami-wrap">
+
+  <a href="../index.html" class="back-link">← index</a>
+
+  <!-- Identity -->
+  <div class="identity-block">
+    <div class="avatar-frame">
+  <img src="https://i.ibb.co/sJddT0zN/REEEE.png" alt="Rezeon" style="width:100%;height:100%;object-fit:cover;">
+</div>
+    <div class="identity-meta">
+      <h1>Rezeon</h1>
+      <div class="identity-handle">> whoami</div>
+      <div class="identity-tagline">Writer. Personal essays. I write about why people believe what they believe.</div>
+    </div>
+  </div>
+
+  <hr class="whoami-divider">
+
+  <!-- Bio -->
+  <section class="bio-section">
+    <div class="whoami-label">// bio</div>
+    <p>
+      I'm Rezeon, 19. I write essays at the intersection of philosophy, epistemology, psychology, and everyday human behaviour. My essays try to cleanse the surface that would allow assumptions to pass unnoticed, exposing the subtle distortions that shape perception, belief, and judgment. I focus on how people come to know what they think they know.How fragile most convictions become under scrutiny. Rather than constructing new beliefs, I dismantle existing ones.
+    </p>
+    <p>The aim is not persuasion, but precision, forcing clarity where ambiguity is often left unchallenged.</p>
+    <p>
+      Based in Bangladesh. Writing in both English and Bangla, because some ideas
+      translate better in the language you grew up thinking in.
+    </p>
+    <!-- Add more paragraphs about yourself here -->
+  </section>
+
+  <!-- Now -->
+  <section class="now-section">
+    <div class="whoami-label">// now</div>
+    <ul class="now-list">
+      <li><span class="now-dot">▸</span> Writing essays on belief, religion, and rationality</li>
+      <li><span class="now-dot">▸</span> Truth seeking</li>
+      <li><span class="now-dot">▸</span> Reading: <!-- Add what you're currently reading -->The Collected Schizophrenias by Esmé Weijun Wang</li>
+      <li><span class="now-dot">▸</span> <!-- Add anything else you're up to --> In search of like minded people</li>
+    </ul>
+  </section>
+
+  <!-- Things I believe -->
+  <section class="beliefs-section">
+    <div class="whoami-label">// things I believe</div>
+    <div class="belief-item"><p>Evidence should move your beliefs. If it doesn't, that's worth examining.</p></div>
+    <div class="belief-item"><p>Writing is thinking. If you can't write it clearly, you don't understand it yet.</p></div>
+    <!-- Add your own beliefs here -->
+  </section>
+
+  <!-- Contact -->
+  <section class="contact-section">
+    <div class="whoami-label">// reach me</div>
+    <div class="contact-grid">
+      <a href="mailto:razonpar@gmail.com" class="contact-chip">Email</a>
+      <a href="https://www.instagram.com/inbiniak" target="_blank" class="contact-chip">Instagram</a>
+      <a href="https://t.me/+I7o3JofpNfdmOTFl" target="_blank" class="contact-chip">Telegram</a>
+    </div>
+  </section>
+
+</div>
+<script src="circles.js"></script>
+</body>
+</html>
