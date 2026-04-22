@@ -12,121 +12,393 @@
       gap: 8px;
       margin-bottom: 1.5rem;
     }
-    .lang-label {
-      font-size: 13px;
-      color: #888;
-      font-family: monospace;
-    }
-    .lang-label.active {
-      color: inherit;
-      font-weight: bold;
-    }
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 40px;
-      height: 22px;
-    }
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
+    .lang-label { font-size: 13px; color: #888; font-family: monospace; }
+    .lang-label.active { color: inherit; font-weight: bold; }
+    .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
     .slider {
-      position: absolute;
-      cursor: pointer;
+      position: absolute; cursor: pointer;
       top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #ccc;
-      border-radius: 22px;
-      transition: 0.3s;
+      background-color: #ccc; border-radius: 22px; transition: 0.3s;
     }
     .slider:before {
-      position: absolute;
-      content: "";
-      height: 16px;
-      width: 16px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      border-radius: 50%;
-      transition: 0.3s;
+      position: absolute; content: "";
+      height: 16px; width: 16px; left: 3px; bottom: 3px;
+      background-color: white; border-radius: 50%; transition: 0.3s;
     }
-    input:checked + .slider {
-      background-color: #555;
-    }
-    input:checked + .slider:before {
-      transform: translateX(18px);
-    }
+    input:checked + .slider { background-color: #555; }
+    input:checked + .slider:before { transform: translateX(18px); }
+
     [data-lang="bn"] { display: none; }
     body.bangla [data-lang="en"] { display: none; }
     body.bangla [data-lang="bn"] { display: list-item; }
     body.bangla .terminal [data-lang="bn"] { display: block; }
     body.bangla .section-heading[data-lang="bn"] { display: block; }
     body.bangla .section-heading[data-lang="en"] { display: none; }
+
+    /* ── Layout ── */
+    .outer-wrap {
+      display: flex;
+      align-items: flex-start;
+      gap: 2.5rem;
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    .main-col { flex: 1 1 620px; min-width: 0; }
+    .main-col .page { max-width: 620px; padding: 0; }
+
+    /* ── Shelf panel ── */
+    .shelf-panel {
+      flex: 0 0 290px;
+      width: 290px;
+      position: sticky;
+      top: 2rem;
+      align-self: flex-start;
+    }
+    .shelf-panel-inner {
+      border: 1px solid #e0d4c4;
+      border-radius: 4px;
+      background: #faf7f3;
+      overflow: hidden;
+    }
+
+    .shelf-header {
+      padding: 0.7rem 1rem 0.6rem;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      border-bottom: 1px solid #e0d4c4;
+    }
+    .shelf-header-title {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      color: #6b4226;
+      text-transform: uppercase;
+    }
+    .shelf-header-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #b08060;
+      opacity: 0.6;
+    }
+
+    .shelf-tabs { display: flex; border-bottom: 1px solid #e0d4c4; }
+    .shelf-tab {
+      flex: 1; background: none; border: none;
+      border-right: 1px solid #e0d4c4;
+      padding: 0.6rem 0;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.72rem; letter-spacing: 0.07em;
+      color: #b08060; cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .shelf-tab:last-child { border-right: none; }
+    .shelf-tab.active { background: #2c1a0e; color: #f0e0c8; }
+    .shelf-tab:hover:not(.active) { background: #f0e0c8; color: #2c1a0e; }
+
+    .shelf-progress { height: 2px; background: #e0d4c4; overflow: hidden; }
+    .shelf-progress-bar { height: 100%; background: #6b4226; width: 0%; transition: width 0.1s linear; }
+
+    .shelf-track-wrap { position: relative; height: 500px; overflow: hidden; }
+    .shelf-track {
+      display: none; height: 100%;
+      flex-direction: column; overflow-y: auto;
+      scrollbar-width: thin; scrollbar-color: #c8b090 transparent;
+    }
+    .shelf-track::-webkit-scrollbar { width: 4px; }
+    .shelf-track::-webkit-scrollbar-thumb { background: #c8b090; border-radius: 2px; }
+    .shelf-track.active { display: flex; }
+
+    .shelf-card {
+      flex-shrink: 0;
+      padding: 0.95rem 1rem;
+      border-bottom: 1px solid #ede3d6;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .shelf-card:last-child { border-bottom: none; }
+    .shelf-card:hover { background: #f0e0c8; }
+
+    .shelf-thumb {
+      width: 100%; aspect-ratio: 16/9;
+      background: #2c1a0e; border-radius: 2px;
+      overflow: hidden; position: relative;
+      margin-bottom: 0.65rem;
+    }
+    .shelf-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0.88; }
+    .shelf-thumb-placeholder {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      background: #3d2510;
+    }
+    .play-badge, .playlist-badge {
+      position: absolute; bottom: 6px; right: 7px;
+      border-radius: 2px; padding: 2px 6px;
+      font-family: monospace; font-size: 0.65rem;
+      color: #f0e0c8; letter-spacing: 0.04em;
+    }
+    .play-badge { background: rgba(44,26,14,0.82); }
+    .playlist-badge { background: rgba(107,66,38,0.88); }
+
+    .shelf-card-title {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.78rem; color: #2c1a0e;
+      line-height: 1.4; margin-bottom: 0.25rem;
+    }
+    .shelf-card-meta {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.67rem; color: #b08060; letter-spacing: 0.04em;
+    }
+
+    .book-row { display: flex; gap: 0.8rem; align-items: flex-start; }
+    .book-spine {
+      flex-shrink: 0; width: 42px; height: 62px;
+      border-radius: 2px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: monospace; font-size: 0.52rem;
+      color: rgba(255,255,255,0.7);
+      writing-mode: vertical-rl; text-orientation: mixed;
+      letter-spacing: 0.06em; overflow: hidden;
+    }
+    .shelf-book-info { flex: 1; min-width: 0; }
+
+    @media (max-width: 860px) {
+      .outer-wrap { flex-direction: column; padding: 0 1.1rem; }
+      .shelf-panel { position: static; width: 100%; flex: none; order: -1; }
+      .shelf-track-wrap { height: 360px; }
+    }
   </style>
 </head>
 <body>
-<div class="page" style="position:relative;z-index:1;">
 
-  <div class="terminal">
-    <p data-lang="en"><span class="prompt">&gt;</span> Hello</p>
-    <p data-lang="en"><span class="prompt">&gt;</span> My name is Rezeon</p>
-    <p data-lang="en"><span class="prompt">&gt;</span> I write about why people are the way they are<span class="cursor"></span></p>
+<div class="outer-wrap">
 
-    <p data-lang="bn"><span class="prompt">&gt;</span> হ্যালো</p>
-    <p data-lang="bn"><span class="prompt">&gt;</span> আমার নাম রাজন</p>
-    <p data-lang="bn"><span class="prompt">&gt;</span> আমি মানুষের ব্যাবহার এবং সিধান্ত বিশ্লেষণ করি<span class="cursor"></span></p>
-  </div>
+  <div class="main-col">
+    <div class="page" style="position:relative;z-index:1;">
 
-  <div class="lang-toggle">
-    <span class="lang-label" id="label-en">EN</span>
-    <label class="switch">
-      <input type="checkbox" id="langSwitch">
-      <span class="slider"></span>
-    </label>
-    <span class="lang-label" id="label-bn">বাং</span>
-  </div>
+      <div class="terminal">
+        <p data-lang="en"><span class="prompt">&gt;</span> Hello</p>
+        <p data-lang="en"><span class="prompt">&gt;</span> My name is Rezeon</p>
+        <p data-lang="en"><span class="prompt">&gt;</span> I write about why people are the way they are<span class="cursor"></span></p>
+        <p data-lang="bn"><span class="prompt">&gt;</span> হ্যালো</p>
+        <p data-lang="bn"><span class="prompt">&gt;</span> আমার নাম রাজন</p>
+        <p data-lang="bn"><span class="prompt">&gt;</span> আমি মানুষের ব্যাবহার এবং সিধান্ত বিশ্লেষণ করি<span class="cursor"></span></p>
+      </div>
 
-  <h2 class="section-heading" data-lang="en">Essays</h2>
-  <h2 class="section-heading" data-lang="bn">প্রবন্ধ</h2>
+      <div class="lang-toggle">
+        <span class="lang-label" id="label-en">EN</span>
+        <label class="switch">
+          <input type="checkbox" id="langSwitch">
+          <span class="slider"></span>
+        </label>
+        <span class="lang-label" id="label-bn">বাং</span>
+      </div>
 
-  <nav>
-    <a href="index.html" class="active" data-lang="en">All</a>
-    <a href="index.html" class="active" data-lang="bn">সব</a>
-    <a href="files/about.html" data-lang="en">About</a>
-    <a href="files/whoami.html" data-lang="en">whoami</a>
-    <a href="files/whoami.html" data-lang="bn">আমি</a>
-  </nav>
+      <h2 class="section-heading" data-lang="en">Essays</h2>
+      <h2 class="section-heading" data-lang="bn">প্রবন্ধ</h2>
 
-  <ul class="essay-list">
-    <li data-lang="en"><a href="files/god-burden-of-proof.html">"You cant disporve God's existence"</a></li>
-    <li data-lang="en"><a href="files/cancerous-growth.html">Cancerous Growth</a></li>
-    <li data-lang="en"><a href="files/claims-require-evidence.html">Claims require evidence</a></li>
-    <li data-lang="en"><a href="files/science-vs-theology.html">Science is to dumb down theology?</a></li>
-    <li data-lang="en"><a href="files/absurd-generalization.html">Absurd Generalization</a></li>
-    <li data-lang="en"><a href="files/atheists-reject-god-to-sin.html">Atheists Reject God So They Can Sin?</a></li>
-    <li data-lang="en"><a href="files/internet-sanity.html">The Internet Doesn't Deserve Your Sanity</a></li>
-    <li data-lang="en"><a href="files/emotional-withdrawal.html">Emotional Withdrawal as Survival Mechanism</a></li>
-    <li data-lang="en"><a href="files/absence-of-evidence.html">Absence of evidence is the evidence of absence</a></li>
-    <li data-lang="en"><a href="files/emotional-beliefs.html">Emotional Beliefs</a></li>
-    <li data-lang="en"><a href="files/respect-as-a-weapon.html">Respect as a Weapon</a></li>
-    <li data-lang="en"><a href="files/pre-established-belief.html">The Problem With Pre-Established Belief</a></li>
-    <li data-lang="en"><a href="files/what-is-self-evident.html">What is Self-Evident</a></li>
+      <nav>
+        <a href="index.html" class="active" data-lang="en">All</a>
+        <a href="index.html" class="active" data-lang="bn">সব</a>
+        <a href="files/about.html" data-lang="en">About</a>
+        <a href="files/whoami.html" data-lang="en">whoami</a>
+        <a href="files/whoami.html" data-lang="bn">আমি</a>
+      </nav>
 
-    <li data-lang="bn"><a href="">"তুমি ঈশ্বরের অস্তিত্ব অপ্রমাণ করতে পারবে না"</a></li>
-    <li data-lang="bn"><a href="files/cancerous-growth-bn.html">ক্যান্সারাস প্রবৃদ্ধি</a></li>
-    <li data-lang="bn"><a href="files/claims-require-evidence-bn.html">দাবির জন্য প্রমাণ</a></li>
-    <li data-lang="bn"><a href="files/absence-of-evidence-bn.html">প্রমাণের অনুপস্থিতিই, অনুপস্থিতির প্রমাণ</a></li>
+      <ul class="essay-list">
+        <li data-lang="en"><a href="files/god-burden-of-proof.html">"You cant disporve God's existence"</a></li>
+        <li data-lang="en"><a href="files/cancerous-growth.html">Cancerous Growth</a></li>
+        <li data-lang="en"><a href="files/claims-require-evidence.html">Claims require evidence</a></li>
+        <li data-lang="en"><a href="files/science-vs-theology.html">Science is to dumb down theology?</a></li>
+        <li data-lang="en"><a href="files/absurd-generalization.html">Absurd Generalization</a></li>
+        <li data-lang="en"><a href="files/atheists-reject-god-to-sin.html">Atheists Reject God So They Can Sin?</a></li>
+        <li data-lang="en"><a href="files/internet-sanity.html">The Internet Doesn't Deserve Your Sanity</a></li>
+        <li data-lang="en"><a href="files/emotional-withdrawal.html">Emotional Withdrawal as Survival Mechanism</a></li>
+        <li data-lang="en"><a href="files/absence-of-evidence.html">Absence of evidence is the evidence of absence</a></li>
+        <li data-lang="en"><a href="files/emotional-beliefs.html">Emotional Beliefs</a></li>
+        <li data-lang="en"><a href="files/respect-as-a-weapon.html">Respect as a Weapon</a></li>
+        <li data-lang="en"><a href="files/pre-established-belief.html">The Problem With Pre-Established Belief</a></li>
+        <li data-lang="en"><a href="files/what-is-self-evident.html">What is Self-Evident</a></li>
+        <li data-lang="bn"><a href="">"তুমি ঈশ্বরের অস্তিত্ব অপ্রমাণ করতে পারবে না"</a></li>
+        <li data-lang="bn"><a href="files/cancerous-growth-bn.html">ক্যান্সারাস প্রবৃদ্ধি</a></li>
+        <li data-lang="bn"><a href="files/claims-require-evidence-bn.html">দাবির জন্য প্রমাণ</a></li>
+        <li data-lang="bn"><a href="files/absence-of-evidence-bn.html">প্রমাণের অনুপস্থিতিই, অনুপস্থিতির প্রমাণ</a></li>
+      </ul>
 
-  </ul>
+      <footer>
+        <div class="footer-links">
+          <a href="mailto:razonpar@gmail.com">Email</a>
+          <a href="https://www.instagram.com/inbiniak" target="_blank">Instagram</a>
+          <a href="https://t.me/+I7o3JofpNfdmOTFl" target="_blank">Telegram</a>
+        </div>
+      </footer>
 
-  <footer>
-    <div class="footer-links">
-      <a href="mailto:razonpar@gmail.com">Email</a>
-      <a href="https://www.instagram.com/inbiniak" target="_blank">Instagram</a>
-      <a href="https://t.me/+I7o3JofpNfdmOTFl" target="_blank">Telegram</a>
     </div>
-  </footer>
+  </div>
+
+  <!-- ─── Right shelf panel ─── -->
+  <aside class="shelf-panel" aria-label="Currently watching and reading">
+    <div class="shelf-panel-inner">
+
+      <div class="shelf-header">
+        <span class="shelf-header-title">marginalia</span>
+        <span class="shelf-header-dot"></span>
+      </div>
+
+      <div class="shelf-tabs" role="tablist">
+        <button class="shelf-tab active" role="tab" data-target="track-video">▶ video</button>
+        <button class="shelf-tab" role="tab" data-target="track-list">☰ lists</button>
+        <button class="shelf-tab" role="tab" data-target="track-books">▨ books</button>
+      </div>
+
+      <div class="shelf-progress">
+        <div class="shelf-progress-bar" id="shelfProgress"></div>
+      </div>
+
+      <div class="shelf-track-wrap">
+
+        <div class="shelf-track active" id="track-video">
+          <div class="shelf-card" onclick="openLink('https://www.youtube.com/watch?v=NNnIGh9g6fA')">
+            <div class="shelf-thumb">
+              <img src="https://img.youtube.com/vi/NNnIGh9g6fA/mqdefault.jpg" alt="" loading="lazy">
+              <span class="play-badge">▶ video</span>
+            </div>
+            <div class="shelf-card-title">The Paradox of Tolerance</div>
+            <div class="shelf-card-meta">Philosophy Tube</div>
+          </div>
+          <div class="shelf-card" onclick="openLink('https://www.youtube.com/watch?v=RYNUVxl6wVg')">
+            <div class="shelf-thumb">
+              <img src="https://i.ytimg.com/vi/RYNUVxl6wVg/hq720.jpg?sqp=-oaymwEcCNAFEJQDSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLADOpL6pSLy_xcRqm85a1bTQjLFAg" alt="" loading="lazy">
+              <span class="play-badge">▶ video</span>
+            </div>
+            <div class="shelf-card-title">Self evident Truths</div>
+            <div class="shelf-card-meta">Daniel Bonevac</div>
+          </div>
+          <div class="shelf-card" onclick="openLink('https://www.youtube.com/watch?v=5KKsLuRPsvU')">
+            <div class="shelf-thumb">
+              <img src="https://i.ytimg.com/vi/5KKsLuRPsvU/hqdefault.jpg?sqp=-oaymwEcCPYBEIoBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLC7l-R26Ci10676nQRbmFCxpMtvKA" alt="" loading="lazy">
+              <span class="play-badge">▶ video</span>
+            </div>
+            <div class="shelf-card-title">CER - Claim Evidence Reasoning</div>
+            <div class="shelf-card-meta">Bozeman science</div>
+          </div>
+          <div class="shelf-card" onclick="openLink('https://www.youtube.com/watch?v=Q7DY40DQQ-c')">
+            <div class="shelf-thumb">
+              <img src="https://i.ytimg.com/vi/Q7DY40DQQ-c/hqdefault.jpg?sqp=-oaymwEcCPYBEIoBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLDUw-2e8g9GEDKeuednGubE8uGPSg" alt="" loading="lazy">
+              <span class="play-badge">▶ video</span>
+            </div>
+            <div class="shelf-card-title">Claims Are Just POINTERS to the ACTUAL Evidence</div>
+            <div class="shelf-card-meta">Matt Dillahunty</div>
+          </div>
+          <div class="shelf-card" onclick="openLink('https://www.youtube.com/watch?v=MaobMHescwg&t')">
+  <div class="shelf-thumb">
+    <img src="https://img.youtube.com/vi/MaobMHescwg/maxresdefault.jpg" alt="" loading="lazy">
+              <span class="play-badge">▶ video</span>
+            </div>
+            <div class="shelf-card-title">Heidegger: Being and Time</div>
+            <div class="shelf-card-meta">Michel Sugrue</div>
+          </div>
+        </div>
+
+        <div class="shelf-track" id="track-list">
+
+  <div class="shelf-card" onclick="openLink('https://www.youtube.com/playlist?list=PLS8vfA_ckeuZ9UjAHhA1q-ROZGuE_h21V')">
+    <div class="shelf-thumb">
+      <img src="https://i.ytimg.com/vi/0F8IDj6I-tM/hqdefault.jpg?sqp=-oaymwE2CPYBEIoBSFXyq4qpAygIARUAAIhCGAFwAcABBvABAfgB_gmAAtAFigIMCAAQARhlIGUoZTAP&rs=AOn4CLChleV6M6qAXVzkj3a_metCwYKv-w" alt="" loading="lazy">
+      <span class="playlist-badge">☰ 40 videos</span>
+    </div>
+    <div class="shelf-card-title">Introduction to Formal Logic</div>
+    <div class="shelf-card-meta"></div>
+  </div>
+
+  <div class="shelf-card" onclick="openLink('https://www.youtube.com/playlist?list=PLhP9EhPApKE-iX8SWvd76ZK_j0jIbzt17')">
+    <div class="shelf-thumb">
+      <img src="https://i.ytimg.com/vi/DFHPH3m-KR8/hqdefault.jpg?sqp=-oaymwE2CPYBEIoBSFXyq4qpAygIARUAAIhCGAFwAcABBvABAfgB_gmAAtAFigIMCAAQARhiIGUoUzAP&rs=AOn4CLBlJuCE88nm1X28sqyetKu7EnIthQ" alt="" loading="lazy">
+      <span class="playlist-badge">☰ 103 videos</span>
+    </div>
+    <div class="shelf-card-title">Ethics & Moral Philosophy</div>
+    <div class="shelf-card-meta"></div>
+  </div>
+
+  <div class="shelf-card" onclick="openLink('https://www.youtube.com/playlist?list=PL848F2368C90DDC3D')">
+    <div class="shelf-thumb">
+      <img src="https://i.ytimg.com/vi/NNnIGh9g6fA/hqdefault.jpg?sqp=-oaymwE2CPYBEIoBSFXyq4qpAygIARUAAIhCGAFwAcABBvABAfgB_gSAAugCigIMCAAQARhlIFooTjAP&rs=AOn4CLBdncQ_JeTalXP6FEzHgMBFpex-RQ" alt="" loading="lazy">
+      <span class="playlist-badge">☰ 25 videos</span>
+    </div>
+    <div class="shelf-card-title">Human Behavioral Biology</div>
+    <div class="shelf-card-meta"></div>
+  </div>
+
+</div>
+
+        <div class="shelf-track" id="track-books">
+          <div class="shelf-card" onclick="openLink('https://www.goodreads.com/book/show/7785159-thinking-fast-and-slow')">
+            <div class="book-row">
+              <div class="book-spine" style="background:#3d2a1a;">Kahneman</div>
+              <div class="shelf-book-info">
+                <div class="shelf-card-title">Thinking, Fast and Slow</div>
+                <div class="shelf-card-meta">Daniel Kahneman</div>
+                <div class="shelf-card-meta" style="margin-top:0.35rem;color:#c8a070;">★★★★★ reading</div>
+              </div>
+            </div>
+          </div>
+          <div class="shelf-card" onclick="openLink('https://www.goodreads.com/book/show/18693772-the-bonobo-and-the-atheist')">
+            <div class="book-row">
+              <div class="book-spine" style="background:#2a3d1a;">de Waal</div>
+              <div class="shelf-book-info">
+                <div class="shelf-card-title">The Bonobo and the Atheist</div>
+                <div class="shelf-card-meta">Frans de Waal</div>
+                <div class="shelf-card-meta" style="margin-top:0.35rem;color:#c8a070;">★★★★☆ done</div>
+              </div>
+            </div>
+          </div>
+          <div class="shelf-card" onclick="openLink('https://www.goodreads.com/book/show/5129.Mere_Christianity')">
+            <div class="book-row">
+              <div class="book-spine" style="background:#1a2a3d;">C.S. Lewis</div>
+              <div class="shelf-book-info">
+                <div class="shelf-card-title">Mere Christianity</div>
+                <div class="shelf-card-meta">C.S. Lewis</div>
+                <div class="shelf-card-meta" style="margin-top:0.35rem;color:#c8a070;">★★★☆☆ done</div>
+              </div>
+            </div>
+          </div>
+          <div class="shelf-card" onclick="openLink('https://www.goodreads.com/book/show/10483171-the-righteous-mind')">
+            <div class="book-row">
+              <div class="book-spine" style="background:#3d1a2a;">Haidt</div>
+              <div class="shelf-book-info">
+                <div class="shelf-card-title">The Righteous Mind</div>
+                <div class="shelf-card-meta">Jonathan Haidt</div>
+                <div class="shelf-card-meta" style="margin-top:0.35rem;color:#c8a070;">★★★★★ queue</div>
+              </div>
+            </div>
+          </div>
+          <div class="shelf-card" onclick="openLink('https://www.goodreads.com/book/show/49021.The_God_Delusion')">
+            <div class="book-row">
+              <div class="book-spine" style="background:#1a3d3a;">Dawkins</div>
+              <div class="shelf-book-info">
+                <div class="shelf-card-title">The God Delusion</div>
+                <div class="shelf-card-meta">Richard Dawkins</div>
+                <div class="shelf-card-meta" style="margin-top:0.35rem;color:#c8a070;">★★★★☆ done</div>
+              </div>
+            </div>
+          </div>
+          <div class="shelf-card" onclick="openLink('https://www.goodreads.com/book/show/44767458-behave')">
+            <div class="book-row">
+              <div class="book-spine" style="background:#3d3a1a;">Sapolsky</div>
+              <div class="shelf-book-info">
+                <div class="shelf-card-title">Behave</div>
+                <div class="shelf-card-meta">Robert Sapolsky</div>
+                <div class="shelf-card-meta" style="margin-top:0.35rem;color:#c8a070;">★★★★★ reading</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </aside>
 
 </div>
 
@@ -134,23 +406,65 @@
   const toggle = document.getElementById('langSwitch');
   const labelEn = document.getElementById('label-en');
   const labelBn = document.getElementById('label-bn');
-
   toggle.addEventListener('change', function() {
     if (this.checked) {
       document.body.classList.add('bangla');
-      labelEn.classList.remove('active');
-      labelBn.classList.add('active');
+      labelEn.classList.remove('active'); labelBn.classList.add('active');
       document.documentElement.lang = 'bn';
     } else {
       document.body.classList.remove('bangla');
-      labelEn.classList.add('active');
-      labelBn.classList.remove('active');
+      labelEn.classList.add('active'); labelBn.classList.remove('active');
       document.documentElement.lang = 'en';
     }
   });
-
   labelEn.classList.add('active');
 </script>
+
+<script>
+  document.querySelectorAll('.shelf-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.shelf-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.shelf-track').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.target).classList.add('active');
+      resetAutoScroll();
+    });
+  });
+
+  function openLink(url) { window.open(url, '_blank', 'noopener'); }
+
+  const SCROLL_INTERVAL = 60, SCROLL_PX = 0.6, PAUSE_AT_BOTTOM = 2200;
+  let scrollTimer = null, pauseTimer = null;
+  const progressBar = document.getElementById('shelfProgress');
+
+  function getActiveTrack() { return document.querySelector('.shelf-track.active'); }
+
+  function resetAutoScroll() {
+    clearInterval(scrollTimer); clearTimeout(pauseTimer);
+    progressBar.style.width = '0%';
+    const t = getActiveTrack(); if (t) t.scrollTop = 0;
+    startAutoScroll();
+  }
+
+  function startAutoScroll() {
+    scrollTimer = setInterval(() => {
+      const t = getActiveTrack(); if (!t) return;
+      const max = t.scrollHeight - t.clientHeight; if (max <= 0) return;
+      t.scrollTop += SCROLL_PX;
+      progressBar.style.width = (t.scrollTop / max * 100) + '%';
+      if (t.scrollTop >= max - 1) {
+        clearInterval(scrollTimer); progressBar.style.width = '100%';
+        pauseTimer = setTimeout(() => { t.scrollTop = 0; progressBar.style.width = '0%'; startAutoScroll(); }, PAUSE_AT_BOTTOM);
+      }
+    }, SCROLL_INTERVAL);
+  }
+
+  const wrap = document.querySelector('.shelf-track-wrap');
+  wrap.addEventListener('mouseenter', () => { clearInterval(scrollTimer); clearTimeout(pauseTimer); });
+  wrap.addEventListener('mouseleave', startAutoScroll);
+  startAutoScroll();
+</script>
+
 <script src="files/circles.js"></script>
 </body>
 </html>
