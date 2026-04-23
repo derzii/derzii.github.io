@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Other Stuff — Rezeon's Marginalia</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── Page layout ── */
+    .outer-wrap {
+      display: flex;
+      align-items: flex-start;
+      gap: 2.5rem;
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    .main-col { flex: 1 1 620px; min-width: 0; }
+    .main-col .page { max-width: 620px; padding: 0; }
+
+    /* ── Projects grid ── */
+    .projects-intro {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--brown-faint);
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+
+    .project-card {
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 2.5rem;
+    }
+
+    .project-card-header {
+      padding: 1rem 1.25rem 0.9rem;
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .project-title {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--brown);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .project-tag {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--brown-faint);
+      letter-spacing: 0.06em;
+    }
+
+    .project-canvas-wrap {
+      position: relative;
+      background: #1a120a;
+      width: 100%;
+      aspect-ratio: 16/9;
+      overflow: hidden;
+      cursor: crosshair;
+    }
+
+    .project-canvas-wrap canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .project-controls {
+      display: flex;
+      gap: 0.6rem;
+      padding: 0.85rem 1.25rem;
+      border-top: 1px solid var(--rule);
+      background: #faf7f3;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .ctrl-btn {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--brown-mid);
+      background: none;
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      padding: 0.3em 0.7em;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      letter-spacing: 0.04em;
+    }
+    .ctrl-btn:hover { background: var(--brown-mark); color: var(--brown); }
+    .ctrl-btn.active { background: var(--brown); color: #fff; border-color: var(--brown); }
+
+    .ctrl-sep {
+      width: 1px;
+      height: 1.4em;
+      background: var(--rule);
+      flex-shrink: 0;
+    }
+
+    .ctrl-label {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--brown-faint);
+      letter-spacing: 0.04em;
+      margin-left: auto;
+    }
+
+    .project-desc {
+      padding: 0.85rem 1.25rem;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--brown-faint);
+      line-height: 1.65;
+      border-top: 1px solid var(--rule);
+    }
+
+    /* hint overlay */
+    .canvas-hint {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: monospace;
+      font-size: 0.65rem;
+      color: rgba(176,128,96,0.55);
+      pointer-events: none;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+      transition: opacity 0.6s;
+    }
+    .canvas-hint.hidden { opacity: 0; }
+
+    @media (max-width: 860px) {
+      .outer-wrap { flex-direction: column; padding: 0 1.1rem; }
+    }
+    @media (max-width: 600px) {
+      .project-controls { gap: 0.5rem; padding: 0.75rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="outer-wrap">
+  <div class="main-col">
+    <div class="page" style="position:relative;z-index:1;">
+
+      <div class="terminal">
+        <p><span class="prompt">&gt;</span> other stuff</p>
+        <p><span class="prompt">&gt;</span> javascript experiments, toys, and small interactive things</p>
+        <p><span class="prompt">&gt;</span> click around<span class="cursor"></span></p>
+      </div>
+
+      <h2 class="section-heading">Experiments</h2>
+
+      <nav>
+        <a href="../index.html">Essays</a>
+        <a href="posts.html">Posts</a>
+        <a href="other-stuff.html" class="active">Other Stuff</a>
+        <a href="about.html">About</a>
+        <a href="whoami.html">whoami</a>
+      </nav>
+
+      <p class="projects-intro">
+        small things built for curiosity. not products, not demos — just code I wrote to understand something better.
+      </p>
+
+      <!-- ── PROJECT 01: Gravity Sand ── -->
+      <div class="project-card">
+        <div class="project-card-header">
+          <span class="project-title">01 &nbsp;gravity sand</span>
+          <span class="project-tag">canvas · physics · cellular automaton</span>
+        </div>
+
+        <div class="project-canvas-wrap" id="sand-wrap">
+          <canvas id="sand-canvas"></canvas>
+          <div class="canvas-hint" id="sand-hint">click or drag to pour sand</div>
+        </div>
+
+        <div class="project-controls">
+          <button class="ctrl-btn active" data-material="sand">sand</button>
+          <button class="ctrl-btn" data-material="water">water</button>
+          <button class="ctrl-btn" data-material="wall">wall</button>
+          <button class="ctrl-btn" data-material="fire">fire</button>
+          <div class="ctrl-sep"></div>
+          <button class="ctrl-btn" id="sand-clear">clear</button>
+          <span class="ctrl-label" id="sand-stats">0 particles</span>
+        </div>
+
+        <div class="project-desc">
+          a falling-sand simulation using a cellular automaton. each cell checks its neighbours every frame and decides whether to move. sand piles, water flows, fire spreads upward. the whole thing runs in ~2ms per frame at 160×90 cells.
+        </div>
+      </div>
+
+      <!-- ── PROJECT 02: Slingshot to Orbit ── -->
+      <div class="project-card">
+        <div class="project-card-header">
+          <span class="project-title">02 &nbsp;slingshot to orbit</span>
+          <span class="project-tag">canvas · gravity · orbital mechanics</span>
+        </div>
+
+        <div class="project-canvas-wrap" id="orbit-wrap" style="cursor:default;">
+          <canvas id="orbit-canvas"></canvas>
+          <div class="canvas-hint" id="orbit-hint">drag outward from a body to aim · release to launch</div>
+        </div>
+
+        <div class="project-controls">
+          <button class="ctrl-btn active" data-body="satellite">🛰 satellite</button>
+          <button class="ctrl-btn" data-body="asteroid">☄ asteroid</button>
+          <button class="ctrl-btn" data-body="duck">🦆 duck</button>
+          <button class="ctrl-btn" data-body="disco">🪩 disco</button>
+          <div class="ctrl-sep"></div>
+          <button class="ctrl-btn" id="orbit-clear">clear</button>
+          <button class="ctrl-btn" id="orbit-trails">trails: on</button>
+          <span class="ctrl-label" id="orbit-stats">0 bodies</span>
+        </div>
+
+        <div class="project-desc">
+          gravitational slingshot playground. click anywhere to place a body — it launches toward the planet and gets flung by gravity. choose your payload: a satellite, an asteroid, a rubber duck in a spacesuit, or a disco ball. get the angle right and you'll settle into a stable orbit; get it wrong and you'll escape into the void (or crater into the planet).
+        </div>
+      </div>
+
+      <!-- ── PROJECT 03: Cellular Automaton Zoo ── -->
+      <div class="project-card">
+        <div class="project-card-header">
+          <span class="project-title">03 &nbsp;cellular automaton zoo</span>
+          <span class="project-tag">canvas · cellular automata · emergence</span>
+        </div>
+
+        <div class="project-canvas-wrap" id="ca-wrap">
+          <canvas id="ca-canvas"></canvas>
+          <div class="canvas-hint" id="ca-hint">click or drag to draw · watch it evolve</div>
+        </div>
+
+        <div class="project-controls" style="flex-wrap:wrap; row-gap:0.5rem;">
+          <button class="ctrl-btn active" data-ca="life">Conway's Life</button>
+          <button class="ctrl-btn" data-ca="brian">Brian's Brain</button>
+          <button class="ctrl-btn" data-ca="daynight">Day & Night</button>
+          <button class="ctrl-btn" data-ca="langton">Langton's Ant</button>
+          <button class="ctrl-btn" data-ca="seeds">Seeds</button>
+          <div class="ctrl-sep"></div>
+          <button class="ctrl-btn" id="ca-random">randomise</button>
+          <button class="ctrl-btn" id="ca-clear">clear</button>
+          <button class="ctrl-btn" id="ca-pause">pause</button>
+          <span class="ctrl-label" id="ca-stats">gen 0</span>
+        </div>
+
+        <div class="project-desc" id="ca-desc">
+          Conway's Life — born with 3 neighbours, survives with 2–3. the classic. gliders, oscillators, spaceships — all emergent from two rules.
+        </div>
+      </div>
+
+      <footer>
+        <div class="footer-links">
+          <a href="mailto:razonpar@gmail.com">Email</a>
+          <a href="https://www.instagram.com/inbiniak" target="_blank">Instagram</a>
+          <a href="https://t.me/+I7o3JofpNfdmOTFl" target="_blank">Telegram</a>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+</div>
+
+<script src="circles.js"></script>
+
+<script>
+// ──────────────────────────────────────────────────
+//  GRAVITY SAND  –  cellular automaton
+// ──────────────────────────────────────────────────
+(function () {
+  const W_CELLS = 160, H_CELLS = 90;
+
+  const EMPTY = 0, SAND = 1, WATER = 2, WALL = 3, FIRE = 4, SMOKE = 5;
+
+  const COLORS = {
+    [EMPTY]: null,
+    [SAND]:  () => `hsl(${33 + Math.random()*12|0},${55+Math.random()*20|0}%,${58+Math.random()*14|0}%)`,
+    [WATER]: () => `hsl(${205+Math.random()*15|0},${65+Math.random()*20|0}%,${48+Math.random()*12|0}%)`,
+    [WALL]:  () => `hsl(${20+Math.random()*8|0},${18+Math.random()*8|0}%,${36+Math.random()*10|0}%)`,
+    [FIRE]:  () => `hsl(${Math.random()>0.5?15+Math.random()*25|0:45+Math.random()*15|0},100%,${48+Math.random()*22|0}%)`,
+    [SMOKE]: () => `hsl(30,8%,${62+Math.random()*18|0}%)`,
+  };
+
+  const canvas = document.getElementById('sand-canvas');
+  const wrap   = document.getElementById('sand-wrap');
+  const stats  = document.getElementById('sand-stats');
+  const hint   = document.getElementById('sand-hint');
+  const ctx    = canvas.getContext('2d');
+
+  // grid stored flat: type + color string
+  let grid  = new Uint8Array(W_CELLS * H_CELLS);
+  let color = new Array(W_CELLS * H_CELLS).fill(null);
+
+  // updated flag to avoid double-stepping
+  let updated = new Uint8Array(W_CELLS * H_CELLS);
+
+  function idx(x, y) { return y * W_CELLS + x; }
+  function inBounds(x, y) { return x >= 0 && x < W_CELLS && y >= 0 && y < H_CELLS; }
+
+  function set(x, y, type) {
+    if (!inBounds(x, y)) return;
+    const i = idx(x, y);
+    grid[i] = type;
+    color[i] = type !== EMPTY ? COLORS[type]() : null;
+  }
+
+  function get(x, y) {
+    if (!inBounds(x, y)) return WALL; // treat out-of-bounds as solid wall
+    return grid[idx(x, y)];
+  }
+
+  function swap(x1, y1, x2, y2) {
+    const i1 = idx(x1, y1), i2 = idx(x2, y2);
+    [grid[i1], grid[i2]] = [grid[i2], grid[i1]];
+    [color[i1], color[i2]] = [color[i2], color[i1]];
+    updated[i2] = 1;
+  }
+
+  // ── Physics step ──
+  function step() {
+    updated.fill(0);
+    // iterate bottom-up, alternating direction each column
+    for (let y = H_CELLS - 2; y >= 0; y--) {
+      const leftFirst = Math.random() > 0.5;
+      for (let xi = 0; xi < W_CELLS; xi++) {
+        const x = leftFirst ? xi : W_CELLS - 1 - xi;
+        const i = idx(x, y);
+        if (updated[i]) continue;
+        const t = grid[i];
+        if (t === EMPTY || t === WALL) continue;
+
+        if (t === SAND) {
+          if (get(x, y+1) === EMPTY) {
+            swap(x, y, x, y+1);
+          } else if (get(x, y+1) === WATER) {
+            swap(x, y, x, y+1);
+          } else {
+            const d = Math.random() > 0.5 ? 1 : -1;
+            if (get(x+d, y+1) === EMPTY || get(x+d, y+1) === WATER) {
+              swap(x, y, x+d, y+1);
+            } else if (get(x-d, y+1) === EMPTY || get(x-d, y+1) === WATER) {
+              swap(x, y, x-d, y+1);
+            }
+          }
+        }
+
+        else if (t === WATER) {
+          if (get(x, y+1) === EMPTY) {
+            swap(x, y, x, y+1);
+          } else {
+            const spread = 3;
+            const d = Math.random() > 0.5 ? 1 : -1;
+            let moved = false;
+            for (let s = 1; s <= spread; s++) {
+              if (get(x + d*s, y) === EMPTY) { swap(x, y, x+d*s, y); moved = true; break; }
+              else if (get(x + d*s, y) !== EMPTY && get(x + d*s, y) !== WATER) break;
+            }
+            if (!moved) {
+              for (let s = 1; s <= spread; s++) {
+                if (get(x - d*s, y) === EMPTY) { swap(x, y, x-d*s, y); break; }
+                else if (get(x - d*s, y) !== EMPTY && get(x - d*s, y) !== WATER) break;
+              }
+            }
+          }
+        }
+
+        else if (t === FIRE) {
+          // drift upward
+          if (get(x, y-1) === EMPTY && Math.random() > 0.3) {
+            swap(x, y, x, y-1);
+          } else if (get(x, y-1) === SMOKE && Math.random() > 0.6) {
+            swap(x, y, x, y-1);
+          }
+          // spread to neighbours
+          for (const [nx, ny] of [[x-1,y],[x+1,y],[x,y-1]]) {
+            if (inBounds(nx, ny) && get(nx, ny) === EMPTY && Math.random() > 0.85) {
+              set(nx, ny, FIRE);
+            }
+          }
+          // chance to die → smoke
+          if (Math.random() > 0.992) {
+            set(x, y, SMOKE);
+          }
+          // refresh color every frame for flicker
+          color[i] = COLORS[FIRE]();
+        }
+
+        else if (t === SMOKE) {
+          // drift upward + sideways
+          const d = Math.random() > 0.5 ? 1 : -1;
+          if (get(x, y-1) === EMPTY && Math.random() > 0.4) {
+            swap(x, y, x, y-1);
+          } else if (get(x+d, y-1) === EMPTY && Math.random() > 0.5) {
+            swap(x, y, x+d, y-1);
+          } else if (get(x+d, y) === EMPTY && Math.random() > 0.6) {
+            swap(x, y, x+d, y);
+          }
+          // dissipate
+          if (Math.random() > 0.998) {
+            set(x, y, EMPTY);
+          }
+        }
+      }
+    }
+  }
+
+  // ── Render ──
+  let offscreen, offCtx;
+  function initOffscreen() {
+    offscreen = document.createElement('canvas');
+    offscreen.width = W_CELLS;
+    offscreen.height = H_CELLS;
+    offCtx = offscreen.getContext('2d');
+  }
+  initOffscreen();
+
+  function render() {
+    // draw each cell
+    offCtx.clearRect(0, 0, W_CELLS, H_CELLS);
+    const imgData = offCtx.createImageData(W_CELLS, H_CELLS);
+    const data = imgData.data;
+
+    for (let i = 0; i < W_CELLS * H_CELLS; i++) {
+      const t = grid[i];
+      if (t === EMPTY) continue;
+      const c = color[i];
+      if (!c) continue;
+      // parse the hsl string — simpler to store RGB directly
+      // use a temp canvas trick once... actually let's store parsed RGB
+    }
+
+    // simpler: just use fillRect per cell — still fast at 160×90
+    offCtx.clearRect(0, 0, W_CELLS, H_CELLS);
+    for (let y = 0; y < H_CELLS; y++) {
+      for (let x = 0; x < W_CELLS; x++) {
+        const t = grid[idx(x, y)];
+        if (t === EMPTY) continue;
+        offCtx.fillStyle = color[idx(x, y)] || '#fff';
+        offCtx.fillRect(x, y, 1, 1);
+      }
+    }
+
+    // scale up to canvas size
+    ctx.imageSmoothingEnabled = false;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(offscreen, 0, 0, canvas.width, canvas.height);
+  }
+
+  // ── Resize ──
+  function resizeCanvas() {
+    const rect = wrap.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  // ── Loop ──
+  let particleCount = 0;
+  function countParticles() {
+    let n = 0;
+    for (let i = 0; i < grid.length; i++) if (grid[i] !== EMPTY) n++;
+    return n;
+  }
+
+  let frame = 0;
+  function loop() {
+    step();
+    render();
+    if (frame % 20 === 0) {
+      stats.textContent = countParticles() + ' particles';
+    }
+    frame++;
+    requestAnimationFrame(loop);
+  }
+  loop();
+
+  // ── Input ──
+  let currentMaterial = SAND;
+  let isPouring = false;
+  let lastCell = null;
+
+  document.querySelectorAll('[data-material]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-material]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentMaterial = {sand: SAND, water: WATER, wall: WALL, fire: FIRE}[btn.dataset.material];
+    });
+  });
+
+  document.getElementById('sand-clear').addEventListener('click', () => {
+    grid.fill(0);
+    color.fill(null);
+  });
+
+  function cellFromEvent(e) {
+    const rect = wrap.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const cx = Math.floor((clientX - rect.left) / rect.width  * W_CELLS);
+    const cy = Math.floor((clientY - rect.top)  / rect.height * H_CELLS);
+    return [cx, cy];
+  }
+
+  function pour(x, y) {
+    const radius = currentMaterial === WALL ? 3 : 2;
+    for (let dy = -radius; dy <= radius; dy++) {
+      for (let dx = -radius; dx <= radius; dx++) {
+        if (dx*dx + dy*dy <= radius*radius) {
+          if (currentMaterial !== WALL && Math.random() > 0.55) continue;
+          if (get(x+dx, y+dy) === EMPTY || currentMaterial === WALL) {
+            set(x+dx, y+dy, currentMaterial);
+          }
+        }
+      }
+    }
+  }
+
+  function onDown(e) {
+    e.preventDefault();
+    isPouring = true;
+    hint.classList.add('hidden');
+    const [cx, cy] = cellFromEvent(e);
+    lastCell = [cx, cy];
+    pour(cx, cy);
+  }
+
+  function onMove(e) {
+    if (!isPouring) return;
+    e.preventDefault();
+    const [cx, cy] = cellFromEvent(e);
+    if (lastCell && (cx !== lastCell[0] || cy !== lastCell[1])) {
+      // interpolate between last and current
+      const [lx, ly] = lastCell;
+      const dist = Math.hypot(cx - lx, cy - ly);
+      const steps = Math.ceil(dist);
+      for (let s = 0; s <= steps; s++) {
+        const t = steps === 0 ? 0 : s / steps;
+        const ix = Math.round(lx + (cx - lx) * t);
+        const iy = Math.round(ly + (cy - ly) * t);
+        pour(ix, iy);
+      }
+    }
+    lastCell = [cx, cy];
+  }
+
+  function onUp() { isPouring = false; lastCell = null; }
+
+  wrap.addEventListener('mousedown', onDown);
+  wrap.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+  wrap.addEventListener('touchstart', onDown, {passive: false});
+  wrap.addEventListener('touchmove', onMove,  {passive: false});
+  window.addEventListener('touchend', onUp);
+
+})();
+</script>
+
+<script>
+// ──────────────────────────────────────────────────
+//  SLINGSHOT TO ORBIT  –  newtonian gravity toy
+// ──────────────────────────────────────────────────
+(function () {
+  const wrap   = document.getElementById('orbit-wrap');
+  const canvas = document.getElementById('orbit-canvas');
+  const ctx    = canvas.getContext('2d');
+  const hint   = document.getElementById('orbit-hint');
+  const stats  = document.getElementById('orbit-stats');
+
+  // ── Config ──
+  const G         = 6000;    // gravitational constant (scaled)
+  const PLANET_R  = 28;
+  const MAX_TRAIL = 280;
+  const DT        = 0.55;    // timestep
+
+  let showTrails = true;
+  let bodies     = [];
+  let currentType = 'satellite';
+
+  // planet lives at canvas centre — computed on resize
+  let PX = 300, PY = 169;
+
+  // ── Body types: label, emoji, radius, colour ──
+  const TYPES = {
+    satellite: { emoji: '🛰',  r: 9,  hue: 200 },
+    asteroid:  { emoji: '☄',   r: 11, hue: 30  },
+    duck:      { emoji: '🦆',  r: 10, hue: 50  },
+    disco:     { emoji: '🪩',  r: 10, hue: 300 },
+  };
+
+  // ── Body class ──
+  function makeBody(x, y, vx, vy, type) {
+    return { x, y, vx, vy, type, trail: [], dead: false, age: 0 };
+  }
+
+  // ── Physics ──
+  function stepPhysics() {
+    for (const b of bodies) {
+      if (b.dead) continue;
+      b.age++;
+
+      // save trail point every 2 frames
+      if (b.age % 2 === 0) {
+        b.trail.push([b.x, b.y]);
+        if (b.trail.length > MAX_TRAIL) b.trail.shift();
+      }
+
+      const dx = PX - b.x, dy = PY - b.y;
+      const dist2 = dx*dx + dy*dy;
+      const dist  = Math.sqrt(dist2);
+
+      // hit planet?
+      if (dist < PLANET_R + TYPES[b.type].r) {
+        b.dead = true;
+        // little impact burst
+        spawnBurst(b.x, b.y, b.vx, b.vy);
+        continue;
+      }
+
+      // escaped?
+      const W = canvas.width, H = canvas.height;
+      if (b.x < -200 || b.x > W+200 || b.y < -200 || b.y > H+200) {
+        b.dead = true;
+        continue;
+      }
+
+      const a = G / dist2;
+      b.vx += (dx / dist) * a * DT;
+      b.vy += (dy / dist) * a * DT;
+      b.x  += b.vx * DT;
+      b.y  += b.vy * DT;
+    }
+    // reap dead bodies after a pause so impact is visible
+    bodies = bodies.filter(b => !b.dead || b.age < 9999); // keep forever for now
+    bodies = bodies.filter(b => !b.dead);
+  }
+
+  // ── Impact burst particles ──
+  let bursts = [];
+  function spawnBurst(x, y, vx, vy) {
+    for (let i = 0; i < 18; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 1 + Math.random() * 3;
+      bursts.push({
+        x, y,
+        vx: Math.cos(angle)*speed + vx*0.3,
+        vy: Math.sin(angle)*speed + vy*0.3,
+        life: 1, decay: 0.03 + Math.random()*0.03,
+        hue: 20 + Math.random()*40
+      });
+    }
+  }
+  function stepBursts() {
+    for (const p of bursts) {
+      p.x += p.vx; p.y += p.vy;
+      p.life -= p.decay;
+    }
+    bursts = bursts.filter(p => p.life > 0);
+  }
+
+  // ── Render ──
+  // planet gradient (drawn once onto offscreen if we want, but canvas is small enough)
+  function drawPlanet() {
+    // glow
+    const glow = ctx.createRadialGradient(PX, PY, PLANET_R*0.3, PX, PY, PLANET_R*2.2);
+    glow.addColorStop(0, 'rgba(80,160,255,0.18)');
+    glow.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(PX, PY, PLANET_R*2.2, 0, Math.PI*2);
+    ctx.fill();
+
+    // surface
+    const grad = ctx.createRadialGradient(PX-PLANET_R*0.3, PY-PLANET_R*0.3, PLANET_R*0.1, PX, PY, PLANET_R);
+    grad.addColorStop(0, '#6ab4ff');
+    grad.addColorStop(0.45, '#2a6fc4');
+    grad.addColorStop(0.78, '#183d7a');
+    grad.addColorStop(1,   '#0c1f3f');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(PX, PY, PLANET_R, 0, Math.PI*2);
+    ctx.fill();
+
+    // ring
+    ctx.save();
+    ctx.translate(PX, PY);
+    ctx.scale(1, 0.28);
+    ctx.beginPath();
+    ctx.arc(0, 0, PLANET_R*1.72, 0, Math.PI*2);
+    ctx.strokeStyle = 'rgba(160,200,255,0.25)';
+    ctx.lineWidth = 5;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  let orbitFrame = 0;
+  function render() {
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    // faint stars (static seed)
+    if (orbitFrame === 0) drawStars(W, H);
+
+    drawPlanet();
+
+    // trails
+    if (showTrails) {
+      for (const b of bodies) {
+        if (b.trail.length < 2) continue;
+        const { hue } = TYPES[b.type];
+        ctx.beginPath();
+        ctx.moveTo(b.trail[0][0], b.trail[0][1]);
+        for (let i = 1; i < b.trail.length; i++) {
+          ctx.lineTo(b.trail[i][0], b.trail[i][1]);
+        }
+        ctx.strokeStyle = `hsla(${hue},70%,65%,0.28)`;
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+      }
+    }
+
+    // bodies
+    for (const b of bodies) {
+      ctx.font = `${TYPES[b.type].r * 2}px serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(TYPES[b.type].emoji, b.x, b.y);
+    }
+
+    // drag arrow
+    if (dragging && dragBody) {
+      const dx = dragStart[0] - dragCur[0];
+      const dy = dragStart[1] - dragCur[1];
+      const len = Math.hypot(dx, dy);
+      if (len > 4) {
+        ctx.save();
+        ctx.strokeStyle = 'rgba(200,180,140,0.7)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 3]);
+        ctx.beginPath();
+        ctx.moveTo(dragBody.x, dragBody.y);
+        ctx.lineTo(dragBody.x + dx, dragBody.y + dy);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        // arrowhead
+        const angle = Math.atan2(dy, dx);
+        const al = 10;
+        ctx.beginPath();
+        ctx.moveTo(dragBody.x + dx, dragBody.y + dy);
+        ctx.lineTo(dragBody.x + dx - al*Math.cos(angle-0.4), dragBody.y + dy - al*Math.sin(angle-0.4));
+        ctx.moveTo(dragBody.x + dx, dragBody.y + dy);
+        ctx.lineTo(dragBody.x + dx - al*Math.cos(angle+0.4), dragBody.y + dy - al*Math.sin(angle+0.4));
+        ctx.stroke();
+        ctx.restore();
+
+        // speed label
+        const speed = (len * 0.18).toFixed(1);
+        ctx.font = '9px monospace';
+        ctx.fillStyle = 'rgba(176,128,96,0.75)';
+        ctx.textAlign = 'left';
+        ctx.fillText(`v=${speed}`, dragBody.x + dx + 8, dragBody.y + dy + 2);
+      }
+    }
+
+    // burst particles
+    for (const p of bursts) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 2.5 * p.life, 0, Math.PI*2);
+      ctx.fillStyle = `hsla(${p.hue},90%,65%,${p.life})`;
+      ctx.fill();
+    }
+
+    orbitFrame++;
+  }
+
+  // static starfield drawn to a background canvas
+  let starCanvas = null;
+  function drawStars(W, H) {
+    starCanvas = document.createElement('canvas');
+    starCanvas.width = W; starCanvas.height = H;
+    const sc = starCanvas.getContext('2d');
+    sc.fillStyle = '#1a120a';
+    sc.fillRect(0, 0, W, H);
+    const rng = mulberry32(0xdeadbeef);
+    for (let i = 0; i < 120; i++) {
+      const sx = rng() * W, sy = rng() * H;
+      const sr = rng() * 1.2 + 0.2;
+      const sa = rng() * 0.5 + 0.3;
+      sc.beginPath();
+      sc.arc(sx, sy, sr, 0, Math.PI*2);
+      sc.fillStyle = `rgba(255,255,240,${sa})`;
+      sc.fill();
+    }
+  }
+  // tiny seeded PRNG so stars don't jump on resize
+  function mulberry32(a) {
+    return function() {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      let t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  // background — draw starCanvas as bg each frame
+  const origRender = render;
+  function renderWithBg() {
+    const W = canvas.width, H = canvas.height;
+    if (starCanvas && starCanvas.width === W && starCanvas.height === H) {
+      ctx.drawImage(starCanvas, 0, 0);
+    } else {
+      ctx.fillStyle = '#1a120a';
+      ctx.fillRect(0, 0, W, H);
+      drawStars(W, H);
+      if (starCanvas) ctx.drawImage(starCanvas, 0, 0);
+    }
+    // draw the rest (planet, bodies etc.)
+    drawPlanet();
+
+    if (showTrails) {
+      for (const b of bodies) {
+        if (b.trail.length < 2) continue;
+        const { hue } = TYPES[b.type];
+        ctx.beginPath();
+        ctx.moveTo(b.trail[0][0], b.trail[0][1]);
+        for (let i = 1; i < b.trail.length; i++) ctx.lineTo(b.trail[i][0], b.trail[i][1]);
+        ctx.strokeStyle = `hsla(${hue},70%,65%,0.28)`;
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+      }
+    }
+
+    for (const b of bodies) {
+      ctx.font = `${TYPES[b.type].r * 2}px serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(TYPES[b.type].emoji, b.x, b.y);
+    }
+
+    if (dragging && dragBody) {
+      const dx = dragStart[0] - dragCur[0];
+      const dy = dragStart[1] - dragCur[1];
+      const len = Math.hypot(dx, dy);
+      if (len > 4) {
+        ctx.save();
+        ctx.strokeStyle = 'rgba(200,180,140,0.7)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 3]);
+        ctx.beginPath();
+        ctx.moveTo(dragBody.x, dragBody.y);
+        ctx.lineTo(dragBody.x + dx, dragBody.y + dy);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        const angle = Math.atan2(dy, dx);
+        const al = 10;
+        ctx.beginPath();
+        ctx.moveTo(dragBody.x + dx, dragBody.y + dy);
+        ctx.lineTo(dragBody.x + dx - al*Math.cos(angle-0.4), dragBody.y + dy - al*Math.sin(angle-0.4));
+        ctx.moveTo(dragBody.x + dx, dragBody.y + dy);
+        ctx.lineTo(dragBody.x + dx - al*Math.cos(angle+0.4), dragBody.y + dy - al*Math.sin(angle+0.4));
+        ctx.stroke();
+        ctx.restore();
+        const speed = (len * 0.18).toFixed(1);
+        ctx.font = '9px monospace';
+        ctx.fillStyle = 'rgba(176,128,96,0.75)';
+        ctx.textAlign = 'left';
+        ctx.fillText(`v=${speed}`, dragBody.x + dx + 8, dragBody.y + dy + 2);
+      }
+    }
+
+    for (const p of bursts) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 2.5 * p.life, 0, Math.PI*2);
+      ctx.fillStyle = `hsla(${p.hue},90%,65%,${p.life})`;
+      ctx.fill();
+    }
+
+    orbitFrame++;
+  }
+
+  // ── Loop ──
+  function loop() {
+    stepPhysics();
+    stepBursts();
+    renderWithBg();
+    stats.textContent = bodies.length + (bodies.length === 1 ? ' body' : ' bodies');
+    requestAnimationFrame(loop);
+  }
+
+  // ── Resize ──
+  function resizeOrbit() {
+    const rect = wrap.getBoundingClientRect();
+    canvas.width  = rect.width;
+    canvas.height = rect.height;
+    PX = canvas.width  / 2;
+    PY = canvas.height / 2;
+    starCanvas = null; // force redraw
+    orbitFrame = 0;
+  }
+  resizeOrbit();
+  window.addEventListener('resize', resizeOrbit);
+
+  // ── Drag input ──
+  let dragging  = false;
+  let dragBody  = null;
+  let dragStart = [0, 0];
+  let dragCur   = [0, 0];
+
+  function clientToCanvas(e) {
+    const rect  = wrap.getBoundingClientRect();
+    const src   = e.touches ? e.touches[0] : e;
+    return [src.clientX - rect.left, src.clientY - rect.top];
+  }
+
+  function onOrbitDown(e) {
+    e.preventDefault();
+    hint.classList.add('hidden');
+    const [x, y] = clientToCanvas(e);
+    // place a body, then start dragging it
+    dragBody  = makeBody(x, y, 0, 0, currentType);
+    bodies.push(dragBody);
+    dragging  = true;
+    dragStart = [x, y];
+    dragCur   = [x, y];
+    wrap.style.cursor = 'crosshair';
+  }
+
+  function onOrbitMove(e) {
+    if (!dragging) return;
+    e.preventDefault();
+    dragCur = clientToCanvas(e);
+  }
+
+  function onOrbitUp(e) {
+    if (!dragging || !dragBody) return;
+    dragging = false;
+    wrap.style.cursor = 'default';
+    const dx = dragStart[0] - dragCur[0];
+    const dy = dragStart[1] - dragCur[1];
+    // velocity = pulled-back direction × scale
+    dragBody.vx = dx * 0.18;
+    dragBody.vy = dy * 0.18;
+    dragBody = null;
+  }
+
+  wrap.addEventListener('mousedown',  onOrbitDown);
+  wrap.addEventListener('mousemove',  onOrbitMove);
+  window.addEventListener('mouseup',  onOrbitUp);
+  wrap.addEventListener('touchstart', onOrbitDown, {passive: false});
+  wrap.addEventListener('touchmove',  onOrbitMove, {passive: false});
+  window.addEventListener('touchend', onOrbitUp);
+
+  // ── Control buttons ──
+  document.querySelectorAll('[data-body]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-body]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentType = btn.dataset.body;
+    });
+  });
+
+  document.getElementById('orbit-clear').addEventListener('click', () => {
+    bodies = [];
+    bursts = [];
+  });
+
+  const trailBtn = document.getElementById('orbit-trails');
+  trailBtn.addEventListener('click', () => {
+    showTrails = !showTrails;
+    trailBtn.textContent = showTrails ? 'trails: on' : 'trails: off';
+    trailBtn.classList.toggle('active', showTrails);
+  });
+
+  loop();
+})();
+</script>
+
+<script>
+// ──────────────────────────────────────────────────
+//  CELLULAR AUTOMATON ZOO
+//  Rules: Life · Brian's Brain · Day & Night ·
+//         Langton's Ant · Seeds
+// ──────────────────────────────────────────────────
+(function () {
+  const wrap   = document.getElementById('ca-wrap');
+  const canvas = document.getElementById('ca-canvas');
+  const ctx    = canvas.getContext('2d');
+  const hint   = document.getElementById('ca-hint');
+  const stats  = document.getElementById('ca-stats');
+  const descEl = document.getElementById('ca-desc');
+
+  const DESCS = {
+    life:    "Conway's Life — born with 3 neighbours, survives with 2–3. the classic. gliders, oscillators, spaceships — all emergent from two rules.",
+    brian:   "Brian's Brain — three states: on → dying → off → (maybe on). nothing ever stabilises. everything is a spaceship.",
+    daynight:"Day & Night — alive cells survive on 3,4,6,7,8 neighbours; dead cells born on 3,6,7,8. symmetric: life in the dark mirrors life in the light.",
+    langton: "Langton's Ant — one ant, two rules: on a white cell turn right; on a black cell turn left. chaos for ~10 000 steps, then a 'highway' emerges and never stops.",
+    seeds:   "Seeds — a cell is born with exactly 2 neighbours, dies immediately after. pure explosion. no survivors, only cascades.",
+  };
+
+  // grid dimensions — computed on resize
+  let W = 0, H = 0;
+  let grid, next; // Uint8Array flat grids (multi-state: 0=off 1=on 2=dying)
+
+  // Langton ant state
+  let ants = [];
+
+  let currentCA = 'life';
+  let generation = 0;
+  let paused = false;
+  let frameSkip = 1; // steps per animation frame
+
+  // ── colour palettes per CA ──
+  const PALETTES = {
+    life:    { bg: '#0d1a0d', on: '#4cdb6a', dy: null },
+    brian:   { bg: '#0a0a1a', on: '#a06aff', dy: '#3a1a66' },
+    daynight:{ bg: '#0d0a1a', on: '#f0c040', dy: null },
+    langton: { bg: '#111008', on: '#e8d87a', dy: '#4a3d10' },
+    seeds:   { bg: '#0a1214', on: '#40e8d0', dy: null },
+  };
+
+  // ── Init grid ──
+  function initGrid() {
+    W = Math.floor(canvas.width  / 4);
+    H = Math.floor(canvas.height / 4);
+    if (W < 2 || H < 2) return;
+    grid = new Uint8Array(W * H);
+    next = new Uint8Array(W * H);
+  }
+
+  function idx(x, y) { return y * W + x; }
+
+  function getCell(g, x, y) {
+    if (x < 0) x += W; if (x >= W) x -= W;
+    if (y < 0) y += H; if (y >= H) y -= H;
+    return g[idx(x, y)];
+  }
+
+  function countOn(g, x, y) {
+    let n = 0;
+    for (let dy = -1; dy <= 1; dy++)
+      for (let dx = -1; dx <= 1; dx++)
+        if (dx || dy) if (getCell(g, x+dx, y+dy) === 1) n++;
+    return n;
+  }
+
+  // ── Step functions ──
+  function stepLife() {
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        const alive = grid[idx(x,y)] === 1;
+        const n = countOn(grid, x, y);
+        next[idx(x,y)] = alive ? (n===2||n===3 ? 1 : 0) : (n===3 ? 1 : 0);
+      }
+    }
+    [grid, next] = [next, grid];
+  }
+
+  function stepBrian() {
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        const s = grid[idx(x,y)];
+        if (s === 1) { next[idx(x,y)] = 2; continue; } // on → dying
+        if (s === 2) { next[idx(x,y)] = 0; continue; } // dying → off
+        // off → on if exactly 2 "on" neighbours
+        let n = 0;
+        for (let dy=-1;dy<=1;dy++) for (let dx=-1;dx<=1;dx++)
+          if (dx||dy) if (getCell(grid,x+dx,y+dy)===1) n++;
+        next[idx(x,y)] = n===2 ? 1 : 0;
+      }
+    }
+    [grid, next] = [next, grid];
+  }
+
+  function stepDayNight() {
+    const born    = new Set([3,6,7,8]);
+    const survive = new Set([3,4,6,7,8]);
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        const alive = grid[idx(x,y)] === 1;
+        const n = countOn(grid, x, y);
+        next[idx(x,y)] = alive ? (survive.has(n)?1:0) : (born.has(n)?1:0);
+      }
+    }
+    [grid, next] = [next, grid];
+  }
+
+  function stepSeeds() {
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        const n = countOn(grid, x, y);
+        next[idx(x,y)] = grid[idx(x,y)]===0 && n===2 ? 1 : 0;
+      }
+    }
+    [grid, next] = [next, grid];
+  }
+
+  // ── Langton's Ant ──
+  const ANT_DIRS = [[0,-1],[1,0],[0,1],[-1,0]]; // N E S W
+
+  function initAnts(count) {
+    ants = [];
+    for (let i = 0; i < count; i++) {
+      ants.push({
+        x: (W/2 + (i - count/2) * 8 | 0),
+        y: H/2 | 0,
+        dir: i % 4,
+        hue: i * (360/count) | 0,
+      });
+    }
+  }
+
+  function stepLangton() {
+    for (const ant of ants) {
+      const i = idx(ant.x, ant.y);
+      const state = grid[i];
+      if (state === 0) {
+        // white: turn right, flip to black, move
+        ant.dir = (ant.dir + 1) % 4;
+        grid[i] = 1;
+      } else {
+        // black: turn left, flip to white, move
+        ant.dir = (ant.dir + 3) % 4;
+        grid[i] = 0;
+      }
+      ant.x = ((ant.x + ANT_DIRS[ant.dir][0]) + W) % W;
+      ant.y = ((ant.y + ANT_DIRS[ant.dir][1]) + H) % H;
+    }
+  }
+
+  // ── Render ──
+  let offscreen, offCtx;
+  function initOffscreen() {
+    offscreen = document.createElement('canvas');
+    offscreen.width  = W;
+    offscreen.height = H;
+    offCtx = offscreen.getContext('2d');
+  }
+
+  function render() {
+    if (!offscreen || offscreen.width !== W || offscreen.height !== H) return;
+    const pal = PALETTES[currentCA];
+    offCtx.fillStyle = pal.bg;
+    offCtx.fillRect(0, 0, W, H);
+
+    const img = offCtx.createImageData(W, H);
+    const d   = img.data;
+
+    // parse palette colours once
+    const onRGB  = hexToRGB(pal.on);
+    const dyRGB  = pal.dy ? hexToRGB(pal.dy) : null;
+
+    for (let i = 0; i < W * H; i++) {
+      const s = grid[i];
+      let rgb = null;
+      if (s === 1) rgb = onRGB;
+      else if (s === 2 && dyRGB) rgb = dyRGB;
+      if (!rgb) continue;
+      d[i*4]   = rgb[0];
+      d[i*4+1] = rgb[1];
+      d[i*4+2] = rgb[2];
+      d[i*4+3] = 255;
+    }
+    offCtx.putImageData(img, 0, 0);
+
+    // draw ants on top for Langton
+    if (currentCA === 'langton') {
+      for (const ant of ants) {
+        offCtx.fillStyle = `hsl(${ant.hue},100%,70%)`;
+        offCtx.fillRect(ant.x, ant.y, 1, 1);
+      }
+    }
+
+    ctx.imageSmoothingEnabled = false;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(offscreen, 0, 0, canvas.width, canvas.height);
+  }
+
+  function hexToRGB(hex) {
+    const n = parseInt(hex.slice(1), 16);
+    return [(n>>16)&255, (n>>8)&255, n&255];
+  }
+
+  // ── Randomise ──
+  function randomise() {
+    if (currentCA === 'langton') {
+      grid.fill(0);
+      // scatter some black cells
+      for (let i = 0; i < W*H*0.3; i++) {
+        grid[Math.random()*W*H|0] = 1;
+      }
+      initAnts(3);
+    } else if (currentCA === 'seeds') {
+      // seeds needs sparse start
+      grid.fill(0);
+      for (let i = 0; i < W*H*0.04; i++) {
+        grid[Math.random()*W*H|0] = 1;
+      }
+    } else {
+      for (let i = 0; i < W*H; i++) grid[i] = Math.random() > 0.65 ? 1 : 0;
+    }
+    generation = 0;
+  }
+
+  // ── Draw input ──
+  let isPainting = false;
+  let paintVal = 1;
+
+  function cellFromEvent(e) {
+    const rect = wrap.getBoundingClientRect();
+    const src  = e.touches ? e.touches[0] : e;
+    const cx = Math.floor((src.clientX - rect.left) / rect.width  * W);
+    const cy = Math.floor((src.clientY - rect.top)  / rect.height * H);
+    return [cx, cy];
+  }
+
+  function paintCell(x, y) {
+    if (x<0||x>=W||y<0||y>=H) return;
+    grid[idx(x,y)] = paintVal;
+  }
+
+  function onCADown(e) {
+    e.preventDefault();
+    hint.classList.add('hidden');
+    isPainting = true;
+    const [x,y] = cellFromEvent(e);
+    paintVal = grid[idx(x,y)] === 1 ? 0 : 1;
+    paintCell(x,y);
+  }
+  function onCAMove(e) {
+    if (!isPainting) return;
+    e.preventDefault();
+    const [x,y] = cellFromEvent(e);
+    paintCell(x,y);
+  }
+  function onCAUp() { isPainting = false; }
+
+  wrap.addEventListener('mousedown',  onCADown);
+  wrap.addEventListener('mousemove',  onCAMove);
+  window.addEventListener('mouseup',  onCAUp);
+  wrap.addEventListener('touchstart', onCADown, {passive:false});
+  wrap.addEventListener('touchmove',  onCAMove, {passive:false});
+  window.addEventListener('touchend', onCAUp);
+
+  // ── Switch CA ──
+  function switchCA(name) {
+    currentCA = name;
+    grid.fill(0);
+    next.fill(0);
+    generation = 0;
+    descEl.textContent = DESCS[name];
+    frameSkip = name === 'langton' ? 4 : 1;
+    randomise();
+  }
+
+  document.querySelectorAll('[data-ca]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-ca]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      switchCA(btn.dataset.ca);
+    });
+  });
+
+  document.getElementById('ca-random').addEventListener('click', randomise);
+  document.getElementById('ca-clear').addEventListener('click', () => {
+    grid.fill(0); generation = 0;
+    if (currentCA === 'langton') initAnts(3);
+  });
+
+  const pauseBtn = document.getElementById('ca-pause');
+  pauseBtn.addEventListener('click', () => {
+    paused = !paused;
+    pauseBtn.textContent = paused ? 'resume' : 'pause';
+    pauseBtn.classList.toggle('active', paused);
+  });
+
+  // ── Resize ──
+  function resizeCA() {
+    const rect = wrap.getBoundingClientRect();
+    canvas.width  = rect.width;
+    canvas.height = rect.height;
+    initGrid();
+    initOffscreen();
+    randomise();
+  }
+  resizeCA();
+  window.addEventListener('resize', resizeCA);
+
+  // ── Loop ──
+  function step() {
+    if (currentCA === 'life')     stepLife();
+    else if (currentCA === 'brian')   stepBrian();
+    else if (currentCA === 'daynight') stepDayNight();
+    else if (currentCA === 'langton') stepLangton();
+    else if (currentCA === 'seeds')   stepSeeds();
+    generation++;
+  }
+
+  function caLoop() {
+    if (!paused) {
+      for (let i = 0; i < frameSkip; i++) step();
+    }
+    render();
+    stats.textContent = 'gen ' + generation.toLocaleString();
+    requestAnimationFrame(caLoop);
+  }
+  caLoop();
+
+})();
+</script>
+
+</body>
+</html>
