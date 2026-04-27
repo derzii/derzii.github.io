@@ -166,8 +166,54 @@
 
     @media (max-width: 860px) {
       .outer-wrap { flex-direction: column; padding: 0 1.1rem; }
-      .shelf-panel { position: static; width: 100%; flex: none; order: 1; }
-      .shelf-track-wrap { height: 360px; }
+      .shelf-panel {
+        position: static; width: 100%; flex: none;
+        margin-bottom: 0.5rem;
+      }
+
+      /* Accordion toggle button — only visible on mobile */
+      .shelf-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        background: none;
+        border: none;
+        border-bottom: 1px solid #e0d4c4;
+        padding: 0.65rem 1rem;
+        cursor: pointer;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        color: #6b4226;
+        text-transform: uppercase;
+      }
+      .shelf-toggle-arrow {
+        font-size: 0.65rem;
+        color: #b08060;
+        transition: transform 0.25s ease;
+      }
+      .shelf-panel.open .shelf-toggle-arrow { transform: rotate(180deg); }
+
+      /* Collapsible body */
+      .shelf-collapsible {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+      }
+      .shelf-panel.open .shelf-collapsible {
+        max-height: 420px; /* enough to show content */
+      }
+
+      /* Hide the original header (toggle replaces it) */
+      .shelf-header { display: none; }
+
+      .shelf-track-wrap { height: 340px; }
+    }
+
+    /* Toggle button hidden on desktop */
+    @media (min-width: 861px) {
+      .shelf-toggle { display: none; }
     }
   </style>
 </head>
@@ -236,10 +282,18 @@
   <aside class="shelf-panel" aria-label="Currently watching and reading">
     <div class="shelf-panel-inner">
 
+      <!-- Mobile accordion toggle (hidden on desktop) -->
+      <button class="shelf-toggle" id="shelfToggle" aria-expanded="false" aria-controls="shelfCollapsible">
+        <span>marginalia — videos &amp; books</span>
+        <span class="shelf-toggle-arrow">▼</span>
+      </button>
+
       <div class="shelf-header">
         <span class="shelf-header-title">marginalia</span>
         <span class="shelf-header-dot"></span>
       </div>
+
+      <div class="shelf-collapsible" id="shelfCollapsible">
 
       <div class="shelf-tabs" role="tablist">
         <button class="shelf-tab active" role="tab" data-target="track-video">▶ video</button>
@@ -1173,6 +1227,8 @@
         </div>
 
       </div>
+
+      </div><!-- /.shelf-collapsible -->
     </div>
   </aside>
 
@@ -1242,5 +1298,38 @@
 </script>
 
 <script src="files/circles.js"></script>
+
+<script>
+  // ── Shelf accordion (mobile only) ──
+  const shelfToggle = document.getElementById('shelfToggle');
+  const shelfPanel  = document.querySelector('.shelf-panel');
+
+  shelfToggle.addEventListener('click', function () {
+    const isOpen = shelfPanel.classList.toggle('open');
+    shelfToggle.setAttribute('aria-expanded', isOpen);
+    if (isOpen) { resetAutoScroll(); }
+    else         { clearInterval(scrollTimer); clearTimeout(pauseTimer); }
+  });
+
+  // ── Relocate shelf after terminal on mobile ──
+  const outerWrap   = document.querySelector('.outer-wrap');
+  const terminal    = document.querySelector('.terminal');
+  let   movedToMobile = false;
+
+  function repositionShelf() {
+    if (window.innerWidth <= 860 && !movedToMobile) {
+      // Insert shelf right after the terminal, inside .main-col > .page
+      terminal.insertAdjacentElement('afterend', shelfPanel);
+      movedToMobile = true;
+    } else if (window.innerWidth > 860 && movedToMobile) {
+      // Restore to outer-wrap as last child (original aside position)
+      outerWrap.appendChild(shelfPanel);
+      movedToMobile = false;
+    }
+  }
+
+  repositionShelf();
+  window.addEventListener('resize', repositionShelf);
+</script>
 </body>
 </html>
